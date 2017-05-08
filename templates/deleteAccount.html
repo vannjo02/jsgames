@@ -1,0 +1,27 @@
+{% extends "bootstrap/base.html" %}
+
+{% block content %}
+
+{% if current_user.is_authenticated %}
+  <h3>Welcome, {{ current_user.id }}!</h3>
+{% endif %}
+
+<a href="/home">Home</a>
+
+{% from "_formhelpers.html" import render_field %}
+<h1>Delete Account</h1>
+<div>
+<form method='POST'>
+<dl>
+	{{ form.csrf_token }}
+    {{ render_field(form.password) }}
+	{{ render_field(form.confirm) }}
+</dl>
+<p>
+<input type=submit value=deleteAccount>
+<input type=hidden value="{{ next or '' }}" name=next>
+</form>
+</div>
+
+{% endblock %}
+

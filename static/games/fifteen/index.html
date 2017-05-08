@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8" />
+    <title>Fifteen Puzzle</title>
+	<link rel="stylesheet" href="15.css" type="text/css">
+</head>
+<body>
+	<h1>Fifteen Puzzle</h1>
+	<label for="num_moves">Number of moves:</label>
+	<input type="number" id="num_moves" value="0" readonly>
+
+	<form name="buttons" id="buttons">
+		<button type="button" style="margin:5px 0px 5px 25px" 
+			onclick="javascript:create_game();">New Game</button>
+	</form>
+
+	<canvas id="myCanvas" width="501" height="501" onclick="javascript:click_listen();"></canvas>
+	<script src="15.js"></script>
+</body>
+</html>

@@ -1,0 +1,43 @@
+{% extends "bootstrap/base.html" %}
+
+{% block content %}
+
+{% if current_user.is_authenticated %}
+<h3>Welcome, {{ current_user.id }}!</h3>
+<a href="/logout">Logout</a><br>
+<a href="/deleteAccount">Delete account</a>
+
+<hr>
+
+{% else %}
+
+{% from "_formhelpers.html" import render_field %}
+<h1>Login</h1>
+<div>
+<form action='/login' method='POST'>
+<dl>
+	{{ form.csrf_token }}
+    {{ render_field(form.username) }}
+    {{ render_field(form.password) }}
+</dl>
+<input type=submit value=Login>
+<input type=hidden value="{{ next or '' }}" name=next>
+</form>
+</div>
+
+{% endif %}
+
+
+
+<div id = game_buttons>
+<ul>
+<li><a href="/flappypong">Flappy Pong</a></li>
+<li><a href="/gravitygolf">Gravity Golf</a></li>
+<li><a href="/pacman">Pacman</a></li>
+<li><a href="/lander">Lander</a></li>
+<li><a href="/fifteen">Fifteen</a></li>
+</ul>
+</div>
+
+{% endblock %}
+
