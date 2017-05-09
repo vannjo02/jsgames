@@ -17,6 +17,7 @@
     </div>
 
 
+
 {% if current_user.is_authenticated %}
 
     <div id="navbar" class="navbar-collapse collapse">
@@ -27,7 +28,9 @@
         <button type="button" class="btn btn-info" onclick=window.location.href='/logout'>Log Out</button>
         <button type="button" class="btn btn-info" onclick=window.location.href='/deleteAccount'>Delete Account</button>
       </form>
-    </div><!--/.navbar-collapse -->
+    </div>
+
+
 {% else %}
 
 <div id="navbar" class="navbar-collapse collapse">
@@ -43,10 +46,8 @@
   <div class="navbar-form navbar-right">
   <button type="submit" class="btn btn-info" onclick=window.location.href='/register'>Register</button>
 </div>
-  <!-- <p><a href='/register'>Register</a></p> -->
-</div><!--/.navbar-collapse -->
-  </div>
-</nav>
+</div>
+
 {% if form.errors %}
   <ul class="errors">
       {% for field_name, field_errors in form.errors|dictsort if field_errors %}
@@ -56,11 +57,10 @@
       {% endfor %}
     </ul>
   {% endif %}
-{% endif %}
-<!-- <h3>Welcome, {{ current_user.id }}!</h3>
-<a href="/logout">Logout</a><br>
-<a href="/deleteAccount">Delete account</a> -->
 
+{% endif %}
+</div>
+</nav>
 <hr>
 <section>
   <h1 class="text-center">Welcome</h1>
@@ -99,16 +99,6 @@
   </div>
 </div>
 
-<!-- <div id = "game_buttons">
-<ul>
-<li><a href="/flappypong">Flappy Pong</a></li>
-<li><a href="/gravitygolf">Gravity Golf</a></li>
-<li><a href="/pacman">Pacman</a></li>
-<li><a href="/lander">Lander</a></li>
-<li><a href="/fifteen">Fifteen</a></li>
-</ul>
-</div> -->
 </section>
-
 
 {% endblock %}
