@@ -7,22 +7,60 @@
 {% endblock %}
 
 {% block content %}
-
 {% from "_formhelpers.html" import render_field %}
-<h1>Register</h1>
+<!-- <h1>Register</h1>
 <div>
 <form method='POST'>
 <dl>
-	{{ form.csrf_token }}
     {{ render_field(form.username) }}
     {{ render_field(form.password) }}
     {{ render_field(form.confirm) }}
 </dl>
-<p>
-<input type=submit value=Register>
-<input type=hidden value="{{ next or '' }}" name=next>
+<p><input type=submit value=Register>
 </form>
+</div> -->
+<nav class="navbar navbar-inverse navbar-static-top">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="#">GameHub</a>
+    </div>
+  </div>
+</nav>
+
+<div class='register-card'>
+  <h1 class="text-center">Register</h1>
+  <div>
+  <form method='POST'>
+  <div class="form-group">
+      {{ form.csrf_token }}
+      {{ form.username (class_="form-control")}}
+  </div>
+  <div class="form-group">
+      {{ form.password (class_="form-control") }}
+  </div>
+  <div class="form-group">
+      {{ form.confirm (class_="form-control")}}
+    </div>
+  <p><input type=submit value=Register>
+      <input type=hidden value="{{ next or '' }}" name=next>
+  </form>
+
+  </div>
+  {% if form.errors %}
+    <ul class="errors">
+        {% for field_name, field_errors in form.errors|dictsort if field_errors %}
+          {% for error in field_errors %}
+            <li>{{ form[field_name].label }}: {{ error }}</li>
+          {% endfor %}
+          {% endfor %}
+        </ul>
+        {% endif %}
 </div>
 
 {% endblock %}
-

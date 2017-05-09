@@ -2,34 +2,103 @@
 
 {% block content %}
 
+
+<nav class="navbar navbar-inverse navbar-static-top">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="#">GameHub</a>
+    </div>
+
+
 {% if current_user.is_authenticated %}
-<h3>Welcome, {{ current_user.id }}!</h3>
-<a href="/logout">Logout</a><br>
-<a href="/deleteAccount">Delete account</a>
 
-<hr>
-
+    <div id="navbar" class="navbar-collapse collapse">
+      <form class="navbar-form navbar-right">
+        <div class="form-group">
+          <p>Welcome, {{ current_user.id }}!</p>
+        </div>
+        <button type="button" class="btn btn-info" onclick=window.location.href='/logout'>Log Out</button>
+        <button type="button" class="btn btn-info" onclick=window.location.href='/deleteAccount'>Delete Account</button>
+      </form>
+    </div><!--/.navbar-collapse -->
 {% else %}
 
-{% from "_formhelpers.html" import render_field %}
-<h1>Login</h1>
-<div>
-<form action='/login' method='POST'>
-<dl>
-	{{ form.csrf_token }}
-    {{ render_field(form.username) }}
-    {{ render_field(form.password) }}
-</dl>
-<input type=submit value=Login>
-<input type=hidden value="{{ next or '' }}" name=next>
-</form>
+<div id="navbar" class="navbar-collapse collapse">
+  <form action='/login' method='POST' class="navbar-form navbar-right">
+  <div class="form-group">
+      {{ form.csrf_token }}
+      {{ form.username (class_="form-control") }}
+      {{ form.password (class_="form-control") }}
+  </div>
+    <button type="submit" class="btn btn-info" value=Login>Sign in</button>
+    <input type=hidden value="{{ next or '' }}" name=next>
+  </form>
+  <div class="navbar-form navbar-right">
+  <button type="submit" class="btn btn-info" onclick=window.location.href='/register'>Register</button>
+</div>
+  <!-- <p><a href='/register'>Register</a></p> -->
+</div><!--/.navbar-collapse -->
+  </div>
+</nav>
+{% if form.errors %}
+  <ul class="errors">
+      {% for field_name, field_errors in form.errors|dictsort if field_errors %}
+        {% for error in field_errors %}
+          <li>{{ form[field_name].label }}: {{ error }}</li>
+        {% endfor %}
+      {% endfor %}
+    </ul>
+  {% endif %}
+{% endif %}
+<!-- <h3>Welcome, {{ current_user.id }}!</h3>
+<a href="/logout">Logout</a><br>
+<a href="/deleteAccount">Delete account</a> -->
+
+<hr>
+<section>
+  <h1 class="text-center">Welcome</h1>
+  <p class="text-center">Play some classic games</p>
+
+  <div class="row">
+<div class="col-md-4">
+  <img class="img-rounded" src="static/images/flappy_edit.png" alt="">
+</div>
+<div class="col-md-4">
+  <img class="img-rounded" src="static/images/Lander-Logo-edit.jpg" alt="">
+</div>
+<div class="col-md-4">
+<img class="img-rounded"  src="static/images/pac-man.png" alt="">
+</div>
 </div>
 
-{% endif %}
+<div class="row">
+  <div class="col-md-4">
+  <button type="button" class="btn btn-primary" onclick=window.location.href='/flappypong'>Play Now</button>
+</div>
+<div class="col-md-4">
+<button type="button" class="btn btn-primary" onclick=window.location.href='/lander'>Play Now</button>
+</div>
+<div class="col-md-4">
+<button type="button" class="btn btn-primary" onclick=window.location.href='/pacman'>Play Now</button>
+</div>
+</div>
 
+<div class="row">
+  <div class="col-md-4">
+  <img class="img-rounded"  src="static/images/pac-man.png" alt="">
+  </div>
+  <div class="col-md-4">
+  <img class="img-rounded"  src="static/images/pac-man.png" alt="">
+  </div>
+</div>
 
-
-<div id = game_buttons>
+<!-- <div id = "game_buttons">
 <ul>
 <li><a href="/flappypong">Flappy Pong</a></li>
 <li><a href="/gravitygolf">Gravity Golf</a></li>
@@ -37,7 +106,8 @@
 <li><a href="/lander">Lander</a></li>
 <li><a href="/fifteen">Fifteen</a></li>
 </ul>
-</div>
+</div> -->
+</section>
+
 
 {% endblock %}
-

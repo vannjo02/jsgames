@@ -53,32 +53,32 @@ def Username_check(form, field):
 
 
 class LoginForm(Form):
-	username = StringField('Username', [validators.Length(min=3, max=25), Username_check])
-	password = PasswordField('Password', validators=[DataRequired()])
-	
+	username = StringField('Username', [validators.Length(min=3, max=25), Username_check], render_kw={"placeholder": "Username"})
+	password = PasswordField('Password', validators=[DataRequired()], render_kw={"placeholder": "Password"})
+
 	def validate(self):
 		rv = Form.validate(self)
 		if not rv:
 			return False
-		
+
 		u = db.query(User).filter_by(username=self.username.data).first()
 		if u.verify_password(self.password.data.encode()) == False:
 			self.password.errors.append('Invalid password')
 			return False
-		
+
 		return True
 
 class RegistrationForm(Form):
-	username = StringField('Username', [validators.Length(min=3, max=25)])
-	password = PasswordField('New Password', [validators.Length(min=3, max=72), validators.DataRequired(), validators.EqualTo('confirm', message='Passwords must match')])
-	confirm = PasswordField('Repeat Password')
+	username = StringField('Username', [validators.Length(min=3, max=25)],render_kw={"placeholder": "Username"})
+	password = PasswordField('New Password', [validators.Length(min=3, max=72), validators.DataRequired(), validators.EqualTo('confirm', message='Passwords must match')], render_kw={"placeholder": "Password"})
+	confirm = PasswordField('Repeat Password', render_kw={"placeholder": "Confirm Password"})
 
 	def validate_username(form, field):
 		u = db.query(User).filter_by(username=field.data)
 		exists = u.scalar()
 		if exists != None:
-			raise ValidationError('Username already exists')		
-		
+			raise ValidationError('Username already exists')
+
 
 class DeleteAccForm(Form):
 	password = PasswordField('Current Password', [validators.DataRequired(), validators.EqualTo('confirm', message='Passwords must match')])
@@ -92,8 +92,8 @@ def add_header(response):
 	"""
 	response.headers['Cache-Control'] = 'public, max-age=0'
 	response.headers['Pragma'] = "no-cache"
-	response.headers['Expires'] = "0"	
-	
+	response.headers['Expires'] = "0"
+
 	return response
 
 
@@ -193,7 +193,7 @@ def deleteAccount():
 			db.commit()
 			flask_login.logout_user()
 			return redirect(url_for('home'))
-	
+
 	return render_template('deleteAccount.html', form=form)
 
 
