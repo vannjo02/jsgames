@@ -3,6 +3,10 @@
 <html>
 <head>
 <style>
+table, th, td {
+    border: 1px solid black;
+}
+
 body{
 	background-color:#151515;
 	color:white;
@@ -32,6 +36,12 @@ h1{
 	<div id="canvasContainer"></div>
 	<p>(arrow keys to rotate, space to thrust)</p>
 </div>
+<table id="scores" class = "scores">
+<tr>
+	<th>Username</th>
+	<th>Score</th>
+</tr>
+</table>
 <script type=text/javascript src="jquery-3.2.1.min.js"></script>
 <script>
 
@@ -310,7 +320,16 @@ function end(message){
             type: 'POST',
 			contentType: 'application/json;charset=UTF-8',
             success: function(response) {
-                console.log(response);
+				var table = document.getElementById("scores");
+			for (var score in response) {
+				if (response.hasOwnProperty(score)) {
+    			var row = table.insertRow(1);
+    			var cell1 = row.insertCell(0);
+    			var cell2 = row.insertCell(1);
+    			cell1.innerHTML = score;
+    			cell2.innerHTML = response[score];
+					}
+				}
             },
             error: function(error) {
                 console.log(error);

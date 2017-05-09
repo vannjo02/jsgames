@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, jsonify
 import flask_login
 from flask_bootstrap import Bootstrap
 from wtforms import Form, BooleanField, StringField, PasswordField, validators, ValidationError
@@ -44,9 +44,9 @@ def redirect_back(endpoint, **values):
 def Username_check(form, field):
 	u = db.query(User).filter_by(username=field.data)
 	exists = u.scalar()
-#	if type(form).__name__ == RegistrationForm and exists != None:
-#		field.errors.append('Username already exists')
-#		return False
+	if type(form).__name__ == RegistrationForm and exists != None:
+		field.errors.append('Username already exists')
+		return False
 
 	if exists == None:
 		field.errors.append('Username does not exist')
@@ -70,7 +70,7 @@ class LoginForm(Form):
 		return True
 
 class RegistrationForm(Form):
-	username = StringField('Username', [validators.Length(min=3, max=25)],render_kw={"placeholder": "Username"})
+	username = StringField('Username', [validators.Length(min=3, max=25), Username_check],render_kw={"placeholder": "Username"})
 	password = PasswordField('New Password', [validators.Length(min=3, max=72), validators.DataRequired(), validators.EqualTo('confirm', message='Passwords must match')], render_kw={"placeholder": "Password"})
 	confirm = PasswordField('Repeat Password', render_kw={"placeholder": "Confirm Password"})
 
@@ -121,12 +121,12 @@ def user_loader(username):
 
 @login_manager.request_loader
 def request_loader(request):
+	print(request.args)
 	username = request.form.get('username')
 	u = db.query(User).filter_by(username=username)
 	exists = u.scalar()
 	if exists == None:
 		return None
-	print('test')
 	user = Users()
 	user.id = username
 	pw = request.form['password']
@@ -150,11 +150,14 @@ def login():
 	return render_template('home.html', form = form, next=next)
 
 
-@app.route('/register', methods=['Get', 'POST'])
+@app.route('/register', methods=['GET', 'POST'])
 def register():
-	if flask_login.current_user.is_authenticated:
-		return redirect(url_for('home'))
+
 	next = get_redirect_target()
+
+	if flask_login.current_user.is_authenticated == True:
+		return redirect(url_for('home'))
+
 	form = RegistrationForm(request.form)
 
 	if request.method == 'POST' and form.validate():
@@ -169,8 +172,10 @@ def register():
 		flask_login.login_user(user)
 		return redirect_back('home')
 
-	return render_template('register.html', form = form, next=next)
+	
+	
 
+	return render_template('register.html', form = form, next = next)
 
 
 @app.route('/logout')
@@ -251,9 +256,8 @@ def lander():
 		for score in lands:
 			scores[score.user.username] = score.score
 
-		return json.dumps(scores);	
+		return jsonify(scores);	
 	
-	print('why')
 	return redirect(url_for('static', filename='games/lander.html'))
 
 @app.route('/fifteen')
