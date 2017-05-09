@@ -67,7 +67,7 @@ class GravityGolf(Base):
 class Pacman(Base):
 	__tablename__ = 'pacman'
 	id = Column(Integer, primary_key=True)
-	score = Column(Float)
+	score = Column(Integer)
 	user_id = Column(Integer, ForeignKey('user.id'))
 	user = relationship("User", back_populates = "pacman_scores")
 
