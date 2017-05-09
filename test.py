@@ -1,5 +1,6 @@
 from database import db_session as db
 from models import *
+from sqlalchemy import desc
 #import bcrypt
 
 #new = "qwerty"
@@ -38,14 +39,23 @@ from models import *
 
 #print('db.query(User).filter_by(password="password").first(): ', db.query(User).filter_by(password="password").first())
 
-u = db.query(User).filter_by(username='test').first()
-print(u)
-print(u.verify_password(b"qwerty"))
+#u = db.query(User).filter_by(username='test').first()
+#print(u)
+#print(u.verify_password(b"qwerty"))
 
 #u.lander_scores.append(Lander(score = 14.5))
 #db.commit()
-#lands = db.query(Lander).all()
-#print(lands)
+#lands = db.query(Lander.score).order_by
+userScore = db.query(User).filter_by(username = 'test').first().lander_scores
+print(userScore)
+#for score in userScore:
+#	db.delete(score)
+#	db.commit()
+#lands = db.query(Lander).order_by(desc(Lander.score)).limit(10).all()
+#for score in lands:
+#	db.delete(score)
+#	db.commit()
+#	print(score.user.username)
 
 
 #print(lands[0].user.password)

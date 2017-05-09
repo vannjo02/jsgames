@@ -177,20 +177,18 @@ function getHeight(i){
 function moveShip(){
 	var h = getHeight((game.points/2) + game.player.offset) - 5;
 	if (game.player.y < h){
-		game.player.dy += 0.01;
+		game.player.dy += 0.023;
 	} else {
-		if (game.player.dy > 1.2){
+		if (game.player.dy > 1.5 || game.player.dx > 1.2 || game.player.dx < -1.2){
 			end("CRASHED");
 		}
-		if (game.player.dx > 1.2 || game.player.dx < -1.2){
-			end("CRASHED");
-		}
+	
 		game.player.dy = 0;
 		game.player.y = h;
 		game.player.dx /= 1.1;
 		if (game.player.dx < 0.1){
 			game.player.dx = 0;
-			if (game.player.fuel < 0) end("OUT OF FUEL");
+			
 			for (var pad in game.pads){
 				var p = game.pads[pad];
 				if (game.player.offset * game.canvas.width/game.points > p.x - 10 && game.player.offset * game.canvas.width/game.points < p.x + 10){
@@ -202,9 +200,9 @@ function moveShip(){
 	}
 	
 	if (game.controls.space && game.player.fuel > 0){
-		game.player.dy -= Math.cos(game.player.rot) * 0.05;
-		game.player.dx += Math.sin(game.player.rot) * 0.05;
-		game.player.fuel -= 0.3;
+		game.player.dy -= Math.cos(game.player.rot) * 0.06;
+		game.player.dx += Math.sin(game.player.rot) * 0.06;
+		game.player.fuel -= 0.35;
 	}
 	if (game.controls.left){
 		game.player.rot -= 0.1;
@@ -266,12 +264,14 @@ function drawBackground(){
 		game.background[star].draw();
 	}
 }
+var hellaPoints
 function drawHUD(){
 	game.ctx.rect(20,20,200,20);
 	game.ctx.stroke();
 	game.ctx.fillStyle = "white";
 	game.ctx.fillRect(20,20,game.player.fuel*2,20);
 	game.ctx.fillText(Math.abs(Math.round(game.player.offset)),game.canvas.width-20, 35)
+	hellaPoints = Math.abs(Math.round(game.player.offset))
 	if (game.message){
 		game.ctx.textAlign = "center";
 		game.ctx.fillText(game.message,game.canvas.width/2, game.canvas.height/2)
@@ -302,8 +302,22 @@ function end(message){
 	game.paused = true;
 	game.message = message;
 	window.setTimeout(function(){
+		console.log(hellaPoints)
 		game.canReset = true;
-	},2000)
+		$.ajax({
+            url: '/lander',
+            data: JSON.stringify(hellaPoints),
+            type: 'POST',
+			contentType: 'application/json;charset=UTF-8',
+            success: function(response) {
+                console.log(response);
+            },
+            error: function(error) {
+                console.log(error);
+            }
+        });
+	},1000)
+	
 }
 
 function click(e){

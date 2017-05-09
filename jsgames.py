@@ -9,6 +9,7 @@ from models import *
 import bcrypt
 import json
 from urllib.parse import urlparse, urljoin
+from sqlalchemy import desc
 
 app = Flask(__name__)
 #os.urandom(24)
@@ -230,9 +231,29 @@ def pacman():
 	return redirect(url_for('static', filename='games/Pacman/index.html'))
 
 
-@app.route('/lander')
+@app.route('/lander', methods=['POST', 'GET'])
 @flask_login.login_required
 def lander():
+	
+	if request.method == 'POST':
+		userID = flask_login.current_user.get_id()
+		u = db.query(User).filter_by(username=userID).first()
+		userScores = u.lander_scores
+		if userScores == []:
+			u.lander_scores.append(Lander(score = request.json))
+			db.commit()
+		elif userScores[0].score < request.json:
+			db.delete(userScores[0])
+			u.lander_scores.append(Lander(score = request.json))
+			db.commit()
+		lands = db.query(Lander).order_by(desc(Lander.score)).limit(10).all()
+		scores = {}
+		for score in lands:
+			scores[score.user.username] = score.score
+
+		return json.dumps(scores);	
+	
+	print('why')
 	return redirect(url_for('static', filename='games/lander.html'))
 
 @app.route('/fifteen')
