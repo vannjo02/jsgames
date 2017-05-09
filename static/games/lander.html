@@ -36,14 +36,47 @@ h1{
 	<div id="canvasContainer"></div>
 	<p>(arrow keys to rotate, space to thrust)</p>
 </div>
-<table id="scores" class = "scores">
+<table class = "scores">
 <tr>
+	<thead>
 	<th>Username</th>
 	<th>Score</th>
+	</thead>
 </tr>
+<tbody id = "scores">
+</tbody>
 </table>
 <script type=text/javascript src="jquery-3.2.1.min.js"></script>
 <script>
+$.ajax({
+            url: '/lander',
+            data: JSON.stringify(0),
+            type: 'POST',
+			contentType: 'application/json;charset=UTF-8',
+            success: function(response) {
+				console.log(response)
+				var lst = []
+				for (var score in response) {
+    			lst.push([score, response[score]]);
+				}
+				lst.sort(function(a, b){
+					return a[1] - b[1];
+				});
+				var table = document.getElementById("scores");
+				console.log(lst);
+			for (var i = 0; i < lst.length; i++) {
+    			var row = table.insertRow(0);
+    			var cell1 = row.insertCell(0);
+    			var cell2 = row.insertCell(1);
+    			cell1.innerHTML = lst[i][0];
+    			cell2.innerHTML = lst[i][1];
+				}
+            },
+            error: function(error) {
+                console.log(error);
+            }
+        });
+
 
 var game = {}
 function Star(x,y,size){
@@ -320,15 +353,23 @@ function end(message){
             type: 'POST',
 			contentType: 'application/json;charset=UTF-8',
             success: function(response) {
+				$('#scores tr').remove();
+				console.log(response)
+				var lst = []
+				for (var score in response) {
+    			lst.push([score, response[score]]);
+				}
+				lst.sort(function(a, b){
+					return a[1] - b[1];
+				});
 				var table = document.getElementById("scores");
-			for (var score in response) {
-				if (response.hasOwnProperty(score)) {
-    			var row = table.insertRow(1);
+				console.log(lst);
+			for (var i = 0; i < lst.length; i++) {
+    			var row = table.insertRow(0);
     			var cell1 = row.insertCell(0);
     			var cell2 = row.insertCell(1);
-    			cell1.innerHTML = score;
-    			cell2.innerHTML = response[score];
-					}
+    			cell1.innerHTML = lst[i][0];
+    			cell2.innerHTML = lst[i][1];
 				}
             },
             error: function(error) {

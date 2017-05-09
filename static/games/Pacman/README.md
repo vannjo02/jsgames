@@ -1,1 +1,0 @@
-# Pacman-game-in-JavaScript

@@ -8,6 +8,38 @@
 // 1: Game Screen
 // 2: Game-over Screen 
 
+$.ajax({
+            url: '/flappypong',
+            data: JSON.stringify(0),
+            type: 'POST',
+			contentType: 'application/json;charset=UTF-8',
+            success: function(response) {
+				console.log(response)
+				var lst = []
+				for (var score in response) {
+    			lst.push([score, response[score]]);
+				}
+				lst.sort(function(a, b){
+					return a[1] - b[1];
+				});
+				var table = document.getElementById("scores");
+				console.log(lst);
+			for (var i = 0; i < lst.length; i++) {
+    			var row = table.insertRow(0);
+    			var cell1 = row.insertCell(0);
+    			var cell2 = row.insertCell(1);
+    			cell1.innerHTML = lst[i][0];
+    			cell2.innerHTML = lst[i][1];
+				}
+            },
+            error: function(error) {
+                console.log(error);
+            }
+        });
+
+
+
+
 var gameScreen = 0;
 
 // gameplay settings
@@ -19,7 +51,7 @@ var friction = 0.1;
 var score = 0;
 var maxHealth = 100;
 var health = 100;
-var healthDecrease = 1;
+var healthDecrease = 2;
 var healthBarWidth = 60;
 
 // ball settings
@@ -97,6 +129,7 @@ function gameplayScreen() {
   wallAdder();
   wallHandler();
 }
+var end = 0
 function gameOverScreen() {
   background(44, 62, 80);
   textAlign(CENTER);
@@ -107,6 +140,40 @@ function gameOverScreen() {
   text(score, width/2, height/2);
   textSize(15);
   text("Click to Restart", width/2, height-30);
+  if (end == 0){
+	end = 1;
+$.ajax({
+            url: '/flappypong',
+            data: JSON.stringify(score),
+            type: 'POST',
+			contentType: 'application/json;charset=UTF-8',
+            success: function(response) {
+				$('#scores tr').remove();
+				console.log(response)
+				var lst = []
+				for (var score in response) {
+    			lst.push([score, response[score]]);
+				}
+				lst.sort(function(a, b){
+					return a[1] - b[1];
+				});
+				var table = document.getElementById("scores");
+				console.log(lst);
+			for (var i = 0; i < lst.length; i++) {
+    			var row = table.insertRow(0);
+    			var cell1 = row.insertCell(0);
+    			var cell2 = row.insertCell(1);
+    			cell1.innerHTML = lst[i][0];
+    			cell2.innerHTML = lst[i][1];
+				}
+            },
+            error: function(error) {
+                console.log(error);
+            }
+        });
+}
+
+
 }
 
 
@@ -131,6 +198,8 @@ function startGame() {
 }
 function gameOver() {
   gameScreen=2;
+  end = 0;
+  console.log(end)
 }
 
 function restart() {

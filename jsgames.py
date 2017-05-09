@@ -48,7 +48,7 @@ def Username_check(form, field):
 		field.errors.append('Username already exists')
 		return False
 
-	if exists == None:
+	if type(form).__name__ == LoginForm and exists == None:
 		field.errors.append('Username does not exist')
 		return False
 
@@ -218,21 +218,78 @@ def home():
 	form = LoginForm(request.form)
 	return render_template('home.html', form = form)
 
-@app.route('/flappypong')
+@app.route('/flappypong', methods=['POST', 'GET'])
 @flask_login.login_required
 def flappypong():
+	
+	if request.method == 'POST':
+		userID = flask_login.current_user.get_id()
+		u = db.query(User).filter_by(username=userID).first()
+		userScores = u.flappy_scores
+		if userScores == []:
+			u.flappy_scores.append(FlappyPong(score = request.json))
+			db.commit()
+		elif userScores[0].score < request.json:
+			db.delete(userScores[0])
+			u.flappy_scores.append(FlappyPong(score = request.json))
+			db.commit()
+		flaps = db.query(FlappyPong).order_by(desc(FlappyPong.score)).limit(10).all()
+		scores = {}
+		for score in flaps:
+			scores[score.user.username] = score.score
+		return jsonify(scores);	
+
 	return redirect(url_for('static', filename='games/flappy_pong/flappy_pong.html'))
 
 
-@app.route('/gravitygolf')
+@app.route('/gravitygolf', methods=['POST', 'GET'])
 @flask_login.login_required
 def gravitygolf():
+
+	if request.method == 'POST':
+		userID = flask_login.current_user.get_id()
+		u = db.query(User).filter_by(username=userID).first()
+		userScores = u.gravity_scores
+		if userScores == []:
+			u.gravity_scores.append(GravityGolf(score = request.json))
+			db.commit()
+		elif userScores[0].score < request.json:
+			db.delete(userScores[0])
+			u.gravity_scores.append(GravityGolf(score = request.json))
+			db.commit()
+		golfs = db.query(GravityGolf).order_by(desc(GravityGolf.score)).limit(10).all()
+		scores = {}
+		for score in golfs:
+			scores[score.user.username] = score.score
+		return jsonify(scores);	
+
+
 	return redirect(url_for('static', filename='games/GravityGolf/index.html'))
 
 
-@app.route('/pacman')
+@app.route('/pacman', methods=['POST', 'GET'])
 @flask_login.login_required
 def pacman():
+
+	if request.method == 'POST':
+		userID = flask_login.current_user.get_id()
+		u = db.query(User).filter_by(username=userID).first()
+		userScores = u.pacman_scores
+		if userScores == []:
+			u.pacman_scores.append(Pacman(score = request.json))
+			db.commit()
+		elif userScores[0].score < request.json:
+			db.delete(userScores[0])
+			u.pacman_scores.append(Pacman(score = request.json))
+			db.commit()
+		pacs = db.query(Pacman).order_by(desc(Pacman.score)).limit(10).all()
+		scores = {}
+		for score in pacs:
+			scores[score.user.username] = score.score
+		return jsonify(scores);	
+
+
+
 	return redirect(url_for('static', filename='games/Pacman/index.html'))
 
 
@@ -255,14 +312,31 @@ def lander():
 		scores = {}
 		for score in lands:
 			scores[score.user.username] = score.score
-
 		return jsonify(scores);	
 	
 	return redirect(url_for('static', filename='games/lander.html'))
 
-@app.route('/fifteen')
+@app.route('/fifteen', methods=['POST', 'GET'])
 @flask_login.login_required
 def fifteen():
+
+	if request.method == 'POST':
+		userID = flask_login.current_user.get_id()
+		u = db.query(User).filter_by(username=userID).first()
+		userScores = u.fifteen_scores
+		if userScores == []:
+			u.fifteen_scores.append(Fifteen(score = request.json))
+			db.commit()
+		elif userScores[0].score < request.json:
+			db.delete(userScores[0])
+			u.fifteen_scores.append(Fifteen(score = request.json))
+			db.commit()
+		fifteen = db.query(Fifteen).order_by(desc(Fifteen.score)).limit(10).all()
+		scores = {}
+		for score in fifteen:
+			scores[score.user.username] = score.score
+		return jsonify(scores);	
+
 	return redirect(url_for('static', filename='games/fifteen/index.html'))
 
 
