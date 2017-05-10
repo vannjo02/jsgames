@@ -6,10 +6,112 @@
 <body>
 <div id="container">
     <h1>Gravity Golf</h1>
-    <div id="canvasContainer"></div>
+    <div id="canvasContainer">
+		<div class="stats">
+			<div class="hole">Hole number: <span>1 of 9</span></div>
+			<div class="score">Number of strokes: <span>0</span></div>
+		</div>
+		<canvas>
+		</canvas>
+	</div>
     <p>dhmstark, js13k 2015</p>
+	
+	<table class = "scores">
+	<tr>
+	<thead>
+	<th>Username</th>
+	<th>Score</th>
+	</thead>
+	</tr>
+	<tbody id = "scores">
+	</tbody>
+	</table>
+
+
+
 </div>
-<script src="main.js"></script>
 <script type=text/javascript src="../jquery-3.2.1.min.js"></script>
+<script src="main.js"></script>
+<script>
+$.ajax({
+            url: '/gravitygolf',
+            data: JSON.stringify(0),
+            type: 'POST',
+			contentType: 'application/json;charset=UTF-8',
+            success: function(response) {
+				console.log(response)
+				var lst = []
+				for (var score in response) {
+    			lst.push([score, response[score]]);
+				}
+				lst.sort(function(a, b){
+					return a[1] - b[1];
+				});
+				var table = document.getElementById("scores");
+				console.log(lst);
+			for (var i = 0; i < lst.length; i++) {
+    			var row = table.insertRow(0);
+    			var cell1 = row.insertCell(0);
+    			var cell2 = row.insertCell(1);
+    			cell1.innerHTML = lst[i][0];
+    			cell2.innerHTML = lst[i][1];
+				}
+            },
+            error: function(error) {
+                console.log(error);
+            }
+        });
+</script>
+
+
+
+
 </body>
+
+
+<style>
+.stats .hole{
+		float: left;
+}
+
+.stats .score{
+		float: right;
+}
+
+.hole {
+			position: relative;
+                top: 20px;
+                left: 0;
+                right: 0;
+            }
+
+.score {
+			position: relative;
+                top: 20px;
+                left: 0;
+                right: 0;
+            }
+.scores {
+		padding-left: 0;
+    padding-right: 0;
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+}
+
+table {
+	margin-bottom: 30px;
+}
+
+table, th, td {
+    border: 1px solid white;
+	color: white;
+	text-align: center;
+}
+
+</style>
+
+
+
+
 </html>

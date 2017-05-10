@@ -48,13 +48,13 @@ def Username_check(form, field):
 		field.errors.append('Username already exists')
 		return False
 
-	if type(form).__name__ == LoginForm and exists == None:
-		field.errors.append('Username does not exist')
-		return False
+#	if type(form).__name__ == LoginForm and exists == None:
+#		field.errors.append('Username does not exist')
+#		return False
 
 
 class LoginForm(Form):
-	username = StringField('Username', [validators.Length(min=3, max=25), Username_check], render_kw={"placeholder": "Username"})
+	username = StringField('Username', [validators.Length(min=3, max=25)], render_kw={"placeholder": "Username"})
 	password = PasswordField('Password', validators=[DataRequired()], render_kw={"placeholder": "Password"})
 
 	def validate(self):
@@ -62,11 +62,15 @@ class LoginForm(Form):
 		if not rv:
 			return False
 
-		u = db.query(User).filter_by(username=self.username.data).first()
-		if u.verify_password(self.password.data.encode()) == False:
-			self.password.errors.append('Invalid password')
+		u = db.query(User).filter_by(username=self.username.data)
+		exists = u.scalar()
+		if exists != None:
+			if u.first().verify_password(self.password.data.encode()) == False:
+				self.password.errors.append('Invalid password')
+				return False
+		else: 
+			self.username.errors.append('Username does not exist')
 			return False
-
 		return True
 
 class RegistrationForm(Form):
@@ -250,10 +254,11 @@ def gravitygolf():
 		userID = flask_login.current_user.get_id()
 		u = db.query(User).filter_by(username=userID).first()
 		userScores = u.gravity_scores
+		print(userScores)
 		if userScores == []:
 			u.gravity_scores.append(GravityGolf(score = request.json))
 			db.commit()
-		elif userScores[0].score < request.json:
+		elif userScores[0].score > request.json:
 			db.delete(userScores[0])
 			u.gravity_scores.append(GravityGolf(score = request.json))
 			db.commit()

@@ -1,16 +1,21 @@
 var game = {
     interval:1000/60, //denominator is target fps for requestAnimationFrame
     lastTime:0,
-    planetCount:3
+    planetCount:4,
+	holeNumber:1,
+	totalStrokes:0,
+	score: $('.score span'),
+	hole: $('.hole span')
 };
 setup();
 
 function setup(){
-    document.getElementById("canvasContainer").innerHTML = "";
-    game.canvas = document.createElement('canvas');
+    //document.getElementById("canvasContainer").innerHTML = "";
+	$('canvas').innerHTML = ""
+    game.canvas = document.getElementsByTagName('canvas')[0];
     game.canvas.id = "canvas";
     game.canvas.width = 1200;
-    game.canvas.height = 500;
+    game.canvas.height = 800;
     document.getElementById("canvasContainer").appendChild(game.canvas);
     game.ctx = game.canvas.getContext("2d");
     document.getElementById('canvas').onmousedown = function(e){ mousedown(e); };
@@ -89,8 +94,50 @@ function Ball(x,y,dX,dY,radius,drawRadius){
                 var hit = Math.atan2(this.y - collision.y, this.x - collision.x);
                 if (hit <= collision.hole.position + collision.hole.radius && hit >= collision.hole.position - collision.hole.radius){
                     alert("You win! Strokes: " + game.strokes);
+					game.totalStrokes += game.strokes;
+					if (game.holeNumber == 9){
+						$.ajax({
+            url: '/gravitygolf',
+            data: JSON.stringify(game.totalStrokes),
+            type: 'POST',
+			contentType: 'application/json;charset=UTF-8',
+            success: function(response) {
+				$('#scores tr').remove();
+				console.log(response)
+				var lst = []
+				for (var score in response) {
+    			lst.push([score, response[score]]);
+				}
+				lst.sort(function(a, b){
+					return a[1] - b[1];
+				});
+				var table = document.getElementById("scores");
+				console.log(lst);
+			for (var i = 0; i < lst.length; i++) {
+    			var row = table.insertRow(0);
+    			var cell1 = row.insertCell(0);
+    			var cell2 = row.insertCell(1);
+    			cell1.innerHTML = lst[i][0];
+    			cell2.innerHTML = lst[i][1];
+				}
+            },
+            error: function(error) {
+                console.log(error);
+            }
+        });
+					game.planetCount = 3;
+					game.holeNumber = 1;
+					game.score.text(0);
+					game.hole.text(game.holeNumber + " of 9");
+					setup();
+					}
+				else {
                     game.planetCount++;
+					game.holeNumber++;
+					game.score.text(game.totalStrokes);
+					game.hole.text(game.holeNumber + " of 9");
                     setup();
+					}
                 }
             }
         }
@@ -226,7 +273,7 @@ function drawPath(obj){
     path.dX += v.x * magnitude * game.mag;
     path.dY += v.y * magnitude * game.mag;
     path.grounded = false;
-    for (var i=0; i<400; i++){
+    for (var i=0; i<75; i++){
         gravityPull(path);
         path.move();
         if (path.grounded) break;
