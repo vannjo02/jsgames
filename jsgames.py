@@ -350,7 +350,7 @@ def fifteen():
 			if userScores == []:
 				u.fifteen_scores.append(Fifteen(score = request.json))
 				db.commit()
-			elif userScores[0].score < request.json:
+			elif userScores[0].score > request.json:
 				db.delete(userScores[0])
 				u.fifteen_scores.append(Fifteen(score = request.json))
 				db.commit()
@@ -360,7 +360,8 @@ def fifteen():
 			scores[score.user.username] = score.score
 		return jsonify(scores);	
 
-	return redirect(url_for('static', filename='games/fifteen/index.html'))
+	return render_template('games/fifteen/index.html')
+#	return redirect(url_for('static', filename='games/fifteen/index.html'))
 
 
 

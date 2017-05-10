@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8" />
     <title>Fifteen Puzzle</title>
-	<link rel="stylesheet" href="15.css" type="text/css">
+	<link rel="stylesheet" href="static/javascript/fifteen/15.css" type="text/css">
 </head>
 <body>
 	<h1>Fifteen Puzzle</h1>
@@ -16,7 +16,56 @@
 	</form>
 
 	<canvas id="myCanvas" width="501" height="501" onclick="javascript:click_listen();"></canvas>
-	<script src="15.js"></script>
-	<script type=text/javascript src="../jquery-3.2.1.min.js"></script>
+	<table class = "scores">
+<tr>
+	<thead>
+	<th>Username</th>
+	<th>Score</th>
+	</thead>
+</tr>
+<tbody id = "scores">
+</tbody>
+</table>
+	<script src="static/javascript/fifteen/15.js"></script>
+	<script type=text/javascript src="static/javascript/jquery-3.2.1.min.js"></script>
+	<script>
+	$.ajax({
+            url: '/fifteen',
+            data: JSON.stringify("get"),
+            type: 'POST',
+			contentType: 'application/json;charset=UTF-8',
+            success: function(response) {
+				$('#scores tr').remove();
+				console.log(response)
+				var lst = []
+				for (var score in response) {
+    			lst.push([score, response[score]]);
+				}
+				lst.sort(function(a, b){
+					return b[1] - a[1];
+				});
+				var table = document.getElementById("scores");
+				console.log(lst);
+			for (var i = 0; i < lst.length; i++) {
+    			var row = table.insertRow(0);
+    			var cell1 = row.insertCell(0);
+    			var cell2 = row.insertCell(1);
+    			cell1.innerHTML = lst[i][0];
+    			cell2.innerHTML = lst[i][1];
+				}
+            },
+            error: function(error) {
+                console.log(error);
+            }
+        });
+	</script>
 </body>
+<style>
+table, th, td {
+    border: 1px solid black;
+	text-align: center;
+	font-size: 115%;
+	margin: 25px;
+}
+</style>
 </html>

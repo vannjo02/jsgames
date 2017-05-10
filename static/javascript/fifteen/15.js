@@ -471,5 +471,34 @@ end_game_check = function() {
 	if (win) {
 		alert("Wait for it...");
 		gap_position = -1;
+		$.ajax({
+            url: '/fifteen',
+            data: JSON.stringify(num_moves),
+            type: 'POST',
+			contentType: 'application/json;charset=UTF-8',
+            success: function(response) {
+				$('#scores tr').remove();
+				console.log(response)
+				var lst = []
+				for (var score in response) {
+    			lst.push([score, response[score]]);
+				}
+				lst.sort(function(a, b){
+					return b[1] - a[1];
+				});
+				var table = document.getElementById("scores");
+				console.log(lst);
+			for (var i = 0; i < lst.length; i++) {
+    			var row = table.insertRow(0);
+    			var cell1 = row.insertCell(0);
+    			var cell2 = row.insertCell(1);
+    			cell1.innerHTML = lst[i][0];
+    			cell2.innerHTML = lst[i][1];
+				}
+            },
+            error: function(error) {
+                console.log(error);
+            }
+        });
 	}
 }
