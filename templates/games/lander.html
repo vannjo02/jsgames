@@ -225,14 +225,15 @@ function moveShip(){
 	if (game.player.y < h){
 		game.player.dy += 0.023;
 	} else {
-		if (game.player.dy > 1.5 || game.player.dx > 1.2 || game.player.dx < -1.2){
+		if (game.player.dy > 1.7 || game.player.dx > 1.7 || game.player.dx < -1.7){
 			end("CRASHED");
 		}
+	  
 	
 		game.player.dy = 0;
 		game.player.y = h;
 		game.player.dx /= 1.1;
-		if (game.player.dx < 0.1){
+		if (game.player.dx < 0.2){
 			game.player.dx = 0;
 			
 			for (var pad in game.pads){
@@ -241,6 +242,11 @@ function moveShip(){
 					game.player.fuel += 1;
 					if (game.player.fuel > 100) game.player.fuel = 100;
 				}
+				else {
+			if (game.player.fuel <= 0) {
+			end("OUT OF FUEL, UNABLE TO REACH LANDING PAD")
+		}
+		}
 			}
 		}
 	}
