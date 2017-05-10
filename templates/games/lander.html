@@ -6,6 +6,7 @@
 table, th, td {
     border: 1px solid black;
 	text-align: center;
+	font-size: 115%;
 }
 
 body{
@@ -47,14 +48,15 @@ h1{
 <tbody id = "scores">
 </tbody>
 </table>
-<script type=text/javascript src="jquery-3.2.1.min.js"></script>
+<script type=text/javascript src="static/javascript/jquery-3.2.1.min.js"></script>
 <script>
 $.ajax({
             url: '/lander',
-            data: JSON.stringify(0),
+            data: JSON.stringify("get"),
             type: 'POST',
 			contentType: 'application/json;charset=UTF-8',
             success: function(response) {
+				$('#scores tr').remove();
 				console.log(response)
 				var lst = []
 				for (var score in response) {

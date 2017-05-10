@@ -109,7 +109,7 @@ function Ball(x,y,dX,dY,radius,drawRadius){
     			lst.push([score, response[score]]);
 				}
 				lst.sort(function(a, b){
-					return a[1] - b[1];
+					return b[1] - a[1];
 				});
 				var table = document.getElementById("scores");
 				console.log(lst);

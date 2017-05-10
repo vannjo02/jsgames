@@ -1,7 +1,7 @@
 <html>
 <head>
     <title>Gravity Golf</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="static/javascript/gravitygolf/styles.css">
 </head>
 <body>
 <div id="container">
@@ -30,12 +30,12 @@
 
 
 </div>
-<script type=text/javascript src="../jquery-3.2.1.min.js"></script>
-<script src="main.js"></script>
+<script type=text/javascript src="static/javascript/jquery-3.2.1.min.js"></script>
+<script src="static/javascript/gravitygolf/main.js"></script>
 <script>
 $.ajax({
             url: '/gravitygolf',
-            data: JSON.stringify(0),
+            data: JSON.stringify("get"),
             type: 'POST',
 			contentType: 'application/json;charset=UTF-8',
             success: function(response) {
@@ -45,7 +45,7 @@ $.ajax({
     			lst.push([score, response[score]]);
 				}
 				lst.sort(function(a, b){
-					return a[1] - b[1];
+					return b[1] - a[1];
 				});
 				var table = document.getElementById("scores");
 				console.log(lst);

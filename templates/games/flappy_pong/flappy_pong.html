@@ -1,0 +1,74 @@
+<html>
+	<head>
+		<title>Flappy Pong</title>
+		<script type=text/javascript src="static/javascript/jquery-3.2.1.min.js"></script>
+		<script tyle="text/javascript" src="static/javascript/flappy_pong/p5.js"></script>
+		<script tyle="text/javascript" src="static/javascript/flappy_pong/flappy_pong.js"></script>
+<script>
+$.ajax({
+            url: '/flappypong',
+            data: JSON.stringify("get"),
+            type: 'POST',
+			contentType: 'application/json;charset=UTF-8',
+            success: function(response) {
+				$('#scores tr').remove();
+				console.log(response)
+				var lst = []
+				for (var score in response) {
+    			lst.push([score, response[score]]);
+				}
+				lst.sort(function(a, b){
+					return a[1] - b[1];
+				});
+				var table = document.getElementById("scores");
+				console.log(lst);
+			for (var i = 0; i < lst.length; i++) {
+    			var row = table.insertRow(0);
+    			var cell1 = row.insertCell(0);
+    			var cell2 = row.insertCell(1);
+    			cell1.innerHTML = lst[i][0];
+    			cell2.innerHTML = lst[i][1];
+				}
+            },
+            error: function(error) {
+                console.log(error);
+            }
+        });
+</script>
+		<style>
+			#container{
+	position:absolute;
+	top:0;
+	left:0;
+	right:0;
+	bottom:0;
+	display: flex;
+	flex-direction:column;
+	align-items: center;
+	justify-content: center;
+}			
+			
+			table, th, td {
+    			border: 1px solid black;
+				text-align: center;
+				font-size: 110%;
+			}
+			canvas {
+				box-shadow: 0 0 20px lightgray;
+				padding-left: 0;
+    			padding-right: 0;
+    			margin-left: auto;
+    			margin-right: auto;
+    			display: block;
+			}
+			table {
+				margin-bottom: 20px;
+			}
+			
+		</style>
+	</head>
+	<body>
+	<div id='container'>
+	</div>
+	</body>
+</html>

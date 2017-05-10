@@ -8,37 +8,6 @@
 // 1: Game Screen
 // 2: Game-over Screen 
 
-$.ajax({
-            url: '/flappypong',
-            data: JSON.stringify(0),
-            type: 'POST',
-			contentType: 'application/json;charset=UTF-8',
-            success: function(response) {
-				console.log(response)
-				var lst = []
-				for (var score in response) {
-    			lst.push([score, response[score]]);
-				}
-				lst.sort(function(a, b){
-					return a[1] - b[1];
-				});
-				var table = document.getElementById("scores");
-				console.log(lst);
-			for (var i = 0; i < lst.length; i++) {
-    			var row = table.insertRow(0);
-    			var cell1 = row.insertCell(0);
-    			var cell2 = row.insertCell(1);
-    			cell1.innerHTML = lst[i][0];
-    			cell2.innerHTML = lst[i][1];
-				}
-            },
-            error: function(error) {
-                console.log(error);
-            }
-        });
-
-
-
 
 var gameScreen = 0;
 
@@ -70,7 +39,7 @@ var racketHeight = 10;
 var wallSpeed = 5;
 var wallInterval = 1000;
 var lastAddTime = 0;
-var minGapHeight = 200;
+var minGapHeight = 150;
 var maxGapHeight = 300;
 var wallWidth = 80;
 var wallColors;
@@ -79,7 +48,9 @@ var walls = [];
 /********* SETUP BLOCK *********/
 
 function setup() {
-  createCanvas(500, 500);
+  createCanvas(600, 600);
+  document.getElementById('container').appendChild(canvas)
+  $('#container').append('<br /><table class = "scores"><tr><thead><th>Username</th><th>Score</th></thead></tr><tbody id = "scores"></tbody></table>')
   // set the initial coordinates of the ball
   ballX=width/4;
   ballY=height/5;

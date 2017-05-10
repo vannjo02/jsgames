@@ -20,6 +20,17 @@ login_manager.init_app(app)
 
 Bootstrap(app)
 
+class SecuredStaticFlask(Flask):
+	def send_static_file(self, filename):
+        # Get user from session
+		print('test', filename)
+		print(flask_login.current_user.is_authenticated())
+		if flask_login.current_user.is_authenticated():
+			return super(SecuredStaticFlask, self).send_static_file(filename)
+		else:
+			abort(403) 
+
+
 def is_safe_url(target):
 	ref_url = urlparse(request.host_url)
 	test_url = urlparse(urljoin(request.host_url, target))
@@ -125,8 +136,10 @@ def user_loader(username):
 
 @login_manager.request_loader
 def request_loader(request):
-	print(request.args)
+	print('test2', request.args)
 	username = request.form.get('username')
+	if username == None:
+		return
 	u = db.query(User).filter_by(username=username)
 	exists = u.scalar()
 	if exists == None:
@@ -227,23 +240,24 @@ def home():
 def flappypong():
 	
 	if request.method == 'POST':
-		userID = flask_login.current_user.get_id()
-		u = db.query(User).filter_by(username=userID).first()
-		userScores = u.flappy_scores
-		if userScores == []:
-			u.flappy_scores.append(FlappyPong(score = request.json))
-			db.commit()
-		elif userScores[0].score < request.json:
-			db.delete(userScores[0])
-			u.flappy_scores.append(FlappyPong(score = request.json))
-			db.commit()
+		if request.json != "get":
+			userID = flask_login.current_user.get_id()
+			u = db.query(User).filter_by(username=userID).first()
+			userScores = u.flappy_scores
+			if userScores == []:
+				u.flappy_scores.append(FlappyPong(score = request.json))
+				db.commit()
+			elif userScores[0].score < request.json:
+				db.delete(userScores[0])
+				u.flappy_scores.append(FlappyPong(score = request.json))
+				db.commit()
 		flaps = db.query(FlappyPong).order_by(desc(FlappyPong.score)).limit(10).all()
 		scores = {}
 		for score in flaps:
 			scores[score.user.username] = score.score
 		return jsonify(scores);	
-
-	return redirect(url_for('static', filename='games/flappy_pong/flappy_pong.html'))
+	return render_template('games/flappy_pong/flappy_pong.html')
+#	return redirect(url_for('static', filename='games/flappy_pong/flappy_pong.html'))
 
 
 @app.route('/gravitygolf', methods=['POST', 'GET'])
@@ -251,25 +265,26 @@ def flappypong():
 def gravitygolf():
 
 	if request.method == 'POST':
-		userID = flask_login.current_user.get_id()
-		u = db.query(User).filter_by(username=userID).first()
-		userScores = u.gravity_scores
-		print(userScores)
-		if userScores == []:
-			u.gravity_scores.append(GravityGolf(score = request.json))
-			db.commit()
-		elif userScores[0].score > request.json:
-			db.delete(userScores[0])
-			u.gravity_scores.append(GravityGolf(score = request.json))
-			db.commit()
+		if request.json != "get":
+			userID = flask_login.current_user.get_id()
+			u = db.query(User).filter_by(username=userID).first()
+			userScores = u.gravity_scores
+			print(userScores)
+			if userScores == []:
+				u.gravity_scores.append(GravityGolf(score = request.json))
+				db.commit()
+			elif userScores[0].score > request.json:
+				db.delete(userScores[0])
+				u.gravity_scores.append(GravityGolf(score = request.json))
+				db.commit()
 		golfs = db.query(GravityGolf).order_by(desc(GravityGolf.score)).limit(10).all()
 		scores = {}
 		for score in golfs:
 			scores[score.user.username] = score.score
 		return jsonify(scores);	
 
-
-	return redirect(url_for('static', filename='games/GravityGolf/index.html'))
+	return render_template('games/GravityGolf/index.html')
+	#return redirect(url_for('static', filename='games/GravityGolf/index.html'))
 
 
 @app.route('/pacman', methods=['POST', 'GET'])
@@ -277,16 +292,17 @@ def gravitygolf():
 def pacman():
 
 	if request.method == 'POST':
-		userID = flask_login.current_user.get_id()
-		u = db.query(User).filter_by(username=userID).first()
-		userScores = u.pacman_scores
-		if userScores == []:
-			u.pacman_scores.append(Pacman(score = request.json))
-			db.commit()
-		elif userScores[0].score < request.json:
-			db.delete(userScores[0])
-			u.pacman_scores.append(Pacman(score = request.json))
-			db.commit()
+		if request.json != "get":
+			userID = flask_login.current_user.get_id()
+			u = db.query(User).filter_by(username=userID).first()
+			userScores = u.pacman_scores
+			if userScores == []:
+				u.pacman_scores.append(Pacman(score = request.json))
+				db.commit()
+			elif userScores[0].score < request.json:
+				db.delete(userScores[0])
+				u.pacman_scores.append(Pacman(score = request.json))
+				db.commit()
 		pacs = db.query(Pacman).order_by(desc(Pacman.score)).limit(10).all()
 		scores = {}
 		for score in pacs:
@@ -295,7 +311,7 @@ def pacman():
 
 
 
-	return redirect(url_for('static', filename='games/Pacman/index.html'))
+	return redirect(url_for('static', filename='javascript/pacman/index.html'))
 
 
 @app.route('/lander', methods=['POST', 'GET'])
@@ -303,39 +319,41 @@ def pacman():
 def lander():
 	
 	if request.method == 'POST':
-		userID = flask_login.current_user.get_id()
-		u = db.query(User).filter_by(username=userID).first()
-		userScores = u.lander_scores
-		if userScores == []:
-			u.lander_scores.append(Lander(score = request.json))
-			db.commit()
-		elif userScores[0].score < request.json:
-			db.delete(userScores[0])
-			u.lander_scores.append(Lander(score = request.json))
-			db.commit()
+		if request.json != "get":
+			userID = flask_login.current_user.get_id()
+			u = db.query(User).filter_by(username=userID).first()
+			userScores = u.lander_scores
+			if userScores == []:
+				u.lander_scores.append(Lander(score = request.json))
+				db.commit()
+			elif userScores[0].score < request.json:
+				db.delete(userScores[0])
+				u.lander_scores.append(Lander(score = request.json))
+				db.commit()
 		lands = db.query(Lander).order_by(desc(Lander.score)).limit(10).all()
 		scores = {}
 		for score in lands:
 			scores[score.user.username] = score.score
 		return jsonify(scores);	
+	return render_template('games/lander.html')
 	
-	return redirect(url_for('static', filename='games/lander.html'))
 
 @app.route('/fifteen', methods=['POST', 'GET'])
 @flask_login.login_required
 def fifteen():
 
 	if request.method == 'POST':
-		userID = flask_login.current_user.get_id()
-		u = db.query(User).filter_by(username=userID).first()
-		userScores = u.fifteen_scores
-		if userScores == []:
-			u.fifteen_scores.append(Fifteen(score = request.json))
-			db.commit()
-		elif userScores[0].score < request.json:
-			db.delete(userScores[0])
-			u.fifteen_scores.append(Fifteen(score = request.json))
-			db.commit()
+		if request.json != "get":
+			userID = flask_login.current_user.get_id()
+			u = db.query(User).filter_by(username=userID).first()
+			userScores = u.fifteen_scores
+			if userScores == []:
+				u.fifteen_scores.append(Fifteen(score = request.json))
+				db.commit()
+			elif userScores[0].score < request.json:
+				db.delete(userScores[0])
+				u.fifteen_scores.append(Fifteen(score = request.json))
+				db.commit()
 		fifteen = db.query(Fifteen).order_by(desc(Fifteen.score)).limit(10).all()
 		scores = {}
 		for score in fifteen:
@@ -343,12 +361,6 @@ def fifteen():
 		return jsonify(scores);	
 
 	return redirect(url_for('static', filename='games/fifteen/index.html'))
-
-
-
-
-
-
 
 
 
