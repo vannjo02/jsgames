@@ -2,8 +2,10 @@ $white: #fff;
 $red: #D95720;
 $grey: #bfbfbf;
 
-.registerForm {
-
+.errors {
+  text-align: right;
+  list-style: none;
+  color: red;
 }
 
 /*body {
