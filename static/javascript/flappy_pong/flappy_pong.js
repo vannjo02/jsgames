@@ -49,8 +49,9 @@ var walls = [];
 
 function setup() {
   createCanvas(600, 600);
-  document.getElementById('container').appendChild(canvas)
   $('#container').append('<br /><table class = "scores"><tr><thead><th>Username</th><th>Score</th></thead></tr><tbody id = "scores"></tbody></table>')
+  document.getElementById('container').appendChild(canvas)
+  
   // set the initial coordinates of the ball
   ballX=width/4;
   ballY=height/5;

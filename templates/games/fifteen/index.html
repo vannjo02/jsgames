@@ -14,9 +14,8 @@
 		<button type="button" style="margin:5px 0px 5px 25px" 
 			onclick="javascript:create_game();">New Game</button>
 	</form>
-
-	<canvas id="myCanvas" width="501" height="501" onclick="javascript:click_listen();"></canvas>
-	<table class = "scores">
+	<div class='container'>
+<table class = "scores">
 <tr>
 	<thead>
 	<th>Username</th>
@@ -26,6 +25,9 @@
 <tbody id = "scores">
 </tbody>
 </table>
+	<canvas id="myCanvas" width="501" height="501" onclick="javascript:click_listen();"></canvas>
+	
+</div>
 	<script src="static/javascript/fifteen/15.js"></script>
 	<script type=text/javascript src="static/javascript/jquery-3.2.1.min.js"></script>
 	<script>
@@ -61,11 +63,25 @@
 	</script>
 </body>
 <style>
+
+
 table, th, td {
     border: 1px solid black;
 	text-align: center;
-	font-size: 100%;
-	margin: 25px;
+	font-size: 110%;
+	margin-left: 10%;
+}
+
+canvas {
+				box-shadow: 0 0 20px lightgray;
+				padding-left: 0;
+    			padding-right: 0;
+    			margin-left: 10%;
+    			margin-right: auto;
+    			display: block;
+			}
+.container {
+	display: flex;
 }
 </style>
 </html>
