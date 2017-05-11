@@ -1,7 +1,7 @@
 var game = {
     interval:1000/60, //denominator is target fps for requestAnimationFrame
     lastTime:0,
-    planetCount:4,
+    planetCount:6,
 	holeNumber:1,
 	totalStrokes:0,
 	score: $('.score span'),
@@ -93,9 +93,10 @@ function Ball(x,y,dX,dY,radius,drawRadius){
             if (collision.hole && this === game.ball){
                 var hit = Math.atan2(this.y - collision.y, this.x - collision.x);
                 if (hit <= collision.hole.position + collision.hole.radius && hit >= collision.hole.position - collision.hole.radius){
-                    alert("You win! Strokes: " + game.strokes);
+                    
 					game.totalStrokes += game.strokes;
 					if (game.holeNumber == 9){
+					alert("You win! total strokes: " + game.totalStrokes);
 						$.ajax({
             url: '/gravitygolf',
             data: JSON.stringify(game.totalStrokes),
@@ -128,10 +129,12 @@ function Ball(x,y,dX,dY,radius,drawRadius){
 					game.planetCount = 3;
 					game.holeNumber = 1;
 					game.score.text(0);
+					game.totalStrokes = 0;
 					game.hole.text(game.holeNumber + " of 9");
 					setup();
 					}
 				else {
+					alert("Round " + game.holeNumber + " completed in " + game.strokes + " strokes");
                     game.planetCount++;
 					game.holeNumber++;
 					game.score.text(game.totalStrokes);
