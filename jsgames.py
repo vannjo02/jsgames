@@ -310,7 +310,7 @@ def pacman():
 		return jsonify(scores);	
 
 
-
+#	return render_template('games/pacman/index.html')
 	return redirect(url_for('static', filename='javascript/pacman/index.html'))
 
 
