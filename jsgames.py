@@ -97,8 +97,8 @@ class RegistrationForm(Form):
 
 
 class DeleteAccForm(Form):
-	password = PasswordField('Current Password', [validators.DataRequired(), validators.EqualTo('confirm', message='Passwords must match')])
-	confirm = PasswordField('Repeat Password')
+	password = PasswordField('Current Password', [validators.DataRequired(), validators.EqualTo('confirm', message='Passwords must match')],render_kw={"placeholder": "Password"})
+	confirm = PasswordField('Repeat Password', render_kw={"placeholder": "Confirm Password"})
 
 
 @app.after_request
@@ -207,7 +207,7 @@ def deleteAccount():
 	form = DeleteAccForm(request.form)
 	if request.method == 'GET':
 		return render_template('deleteAccount.html', form=form)
-
+	print(request.form)
 	if request.method == 'POST' and form.validate():
 		userID = flask_login.current_user.get_id()
 		u = db.query(User).filter_by(username=userID).first()
@@ -217,7 +217,7 @@ def deleteAccount():
 			flask_login.logout_user()
 			return redirect(url_for('home'))
 
-	return render_template('deleteAccount.html', form=form)
+	return render_template('deleteAccount.html', form=form, next=next)
 
 
 @login_manager.unauthorized_handler
@@ -232,8 +232,9 @@ def index():
 
 @app.route('/home')
 def home():
+	next = get_redirect_target()
 	form = LoginForm(request.form)
-	return render_template('home.html', form = form)
+	return render_template('home.html', form = form, next=next)
 
 @app.route('/flappypong', methods=['POST', 'GET'])
 def flappypong():
