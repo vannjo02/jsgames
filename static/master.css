@@ -1,0 +1,48 @@
+$white: #fff;
+$red: #D95720;
+$grey: #bfbfbf;
+
+.registerForm {
+
+}
+
+/*body {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  font-size: 16px;
+  background-color: white;
+}*/
+
+
+.form-group p{
+  color: white;
+  position: absolue;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.register-card {
+  padding-left: 0;
+   padding-right: 0;
+   margin-left: auto;
+   margin-right: auto;
+   display: block;
+  width: 325px;
+  height: 485px;
+  background:  $white;
+  border-radius: 20px;
+  box-sizing: border-box;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 0 30px 10px rgba(203,203,199,0.38);
+  display: block;
+  position: relative;
+}
+
+.register-card--title{
+  color: $red;
+  /*text-transform: uppercase;*/
+  text-align: center;
+}

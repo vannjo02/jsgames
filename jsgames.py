@@ -236,7 +236,6 @@ def home():
 	return render_template('home.html', form = form)
 
 @app.route('/flappypong', methods=['POST', 'GET'])
-@flask_login.login_required
 def flappypong():
 	
 	if request.method == 'POST':
@@ -261,7 +260,6 @@ def flappypong():
 
 
 @app.route('/gravitygolf', methods=['POST', 'GET'])
-@flask_login.login_required
 def gravitygolf():
 
 	if request.method == 'POST':
@@ -288,7 +286,6 @@ def gravitygolf():
 
 
 @app.route('/pacman', methods=['POST', 'GET'])
-@flask_login.login_required
 def pacman():
 
 	if request.method == 'POST':
@@ -315,7 +312,6 @@ def pacman():
 
 
 @app.route('/lander', methods=['POST', 'GET'])
-@flask_login.login_required
 def lander():
 	
 	if request.method == 'POST':
@@ -339,7 +335,6 @@ def lander():
 	
 
 @app.route('/fifteen', methods=['POST', 'GET'])
-@flask_login.login_required
 def fifteen():
 
 	if request.method == 'POST':

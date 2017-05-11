@@ -1,8 +1,24 @@
 {% extends "bootstrap/base.html" %}
 
+{% block styles %}
+{{super()}}
+<link rel="stylesheet"
+     href="{{url_for('.static', filename='master.css')}}">
+{% endblock %}
 
 {% block content %}
-
+{% from "_formhelpers.html" import render_field %}
+<!-- <h1>Register</h1>
+<div>
+<form method='POST'>
+<dl>
+    {{ render_field(form.username) }}
+    {{ render_field(form.password) }}
+    {{ render_field(form.confirm) }}
+</dl>
+<p><input type=submit value=Register>
+</form>
+</div> -->
 <nav class="navbar navbar-inverse navbar-static-top">
   <div class="container">
     <div class="navbar-header">
@@ -18,9 +34,13 @@
 </nav>
 
 <div class='register-card'>
-  <h1 class="text-center">Register</h1>
+  <div class='register-card--title'>
+    <h1>
+      Register
+    </h1>
+  </div>
   <div>
-  <form method='POST'>
+  <form class="registerForm" method='POST'>
   <div class="form-group">
       {{ form.csrf_token }}
       {{ form.username (class_="form-control")}}
@@ -31,8 +51,11 @@
   <div class="form-group">
       {{ form.confirm (class_="form-control")}}
     </div>
-  <p><input type=submit value=Register>
+  <!-- <p><input type=submit value=Register> -->
+  <div class="col-md-8 text-center">
+    <button type="submit" class="btn btn-info" value=Register>Register</button>
       <input type=hidden value="{{ next or '' }}" name=next>
+    </div>
   </form>
 
   </div>

@@ -1,8 +1,13 @@
 {% extends "bootstrap/base.html" %}
+{% block styles %}
+{{super()}}
+<link rel="stylesheet"
+     href="{{url_for('.static', filename='master.css')}}">
+{% endblock %}
+
 
 {% block content %}
 
-<meta charset="UTF-8">
 
 <nav class="navbar navbar-inverse navbar-static-top">
   <div class="container">
@@ -13,9 +18,8 @@
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="/home">GameHub</a>
+      <a class="navbar-brand" href="#">GameHub</a>
     </div>
-
 
 
 {% if current_user.is_authenticated %}
@@ -28,9 +32,7 @@
         <button type="button" class="btn btn-info" onclick=window.location.href='/logout'>Log Out</button>
         <button type="button" class="btn btn-info" onclick=window.location.href='/deleteAccount'>Delete Account</button>
       </form>
-    </div>
-
-
+    </div><!--/.navbar-collapse -->
 {% else %}
 
 <div id="navbar" class="navbar-collapse collapse">
@@ -46,8 +48,8 @@
   <div class="navbar-form navbar-right">
   <button type="submit" class="btn btn-info" onclick=window.location.href='/register'>Register</button>
 </div>
-</div>
-
+  <!-- <p><a href='/register'>Register</a></p> -->
+</div><!--/.navbar-collapse -->
 {% if form.errors %}
   <ul class="errors">
       {% for field_name, field_errors in form.errors|dictsort if field_errors %}
@@ -57,48 +59,51 @@
       {% endfor %}
     </ul>
   {% endif %}
-
 {% endif %}
+
 </div>
 </nav>
+<!-- <h3>Welcome, {{ current_user.id }}!</h3>
+<a href="/logout">Logout</a><br>
+<a href="/deleteAccount">Delete account</a> -->
+
 <hr>
 <section>
   <h1 class="text-center">Welcome</h1>
-  <p class="text-center">Play some classic games</p>
+  <p class="text-center">Sign Up to play some classic games</p>
 
   <div class="row">
 <div class="col-md-4">
-  <img class="img-rounded" src="static/images/flappy_edit.png" alt="">
+  <a href="/flappypong"><img class="img-rounded" src="static/images/flappy_edit.png" alt=""></a>
 </div>
 <div class="col-md-4">
-  <img class="img-rounded" src="static/images/Lander-Logo-edit.jpg" alt="">
+  <a href="/lander"><img class="img-rounded" src="static/images/Lander-Logo-edit.jpg" alt=""></a>
 </div>
 <div class="col-md-4">
-<img class="img-rounded"  src="static/images/pac-man.png" alt="">
+<a href="/pacman"><img class="img-rounded"  src="static/images/Pacman-final.png" alt=""></a>
 </div>
 </div>
+
 
 <div class="row">
   <div class="col-md-4">
-  <button type="button" class="btn btn-primary" onclick=window.location.href='/flappypong'>Play Now</button>
-</div>
-<div class="col-md-4">
-<button type="button" class="btn btn-primary" onclick=window.location.href='/lander'>Play Now</button>
-</div>
-<div class="col-md-4">
-<button type="button" class="btn btn-primary" onclick=window.location.href='/pacman'>Play Now</button>
+  <a href="/gravitygolf"><img class="img-rounded"  src="static/images/gravity_golf.png" alt=""></a>
+  </div>
+  <div class="col-md-4">
+  <a href="/fifteen"><img class="img-rounded"  src="static/images/Fifteen.png" alt=""></a>
 </div>
 </div>
 
-<div class="row">
-  <div class="col-md-4">
-  <img class="img-rounded"  src="static/images/pac-man.png" alt="">
-  </div>
-  <div class="col-md-4">
-  <img class="img-rounded"  src="static/images/pac-man.png" alt="">
-  </div>
-</div>
-
+<!-- <div id = "game_buttons">
+<ul>
+<li><a href="/flappypong">Flappy Pong</a></li>
+<li><a href="/gravitygolf">Gravity Golf</a></li>
+<li><a href="/pacman">Pacman</a></li>
+<li><a href="/lander">Lander</a></li>
+<li><a href="/fifteen">Fifteen</a></li>
+</ul>
+</div> -->
 </section>
+
 
 {% endblock %}
