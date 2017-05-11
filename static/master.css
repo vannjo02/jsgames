@@ -2,7 +2,7 @@ $white: #fff;
 $red: #D95720;
 $grey: #bfbfbf;
 
-.error li {
+.errors li {
   text-align: right;
   list-style: none;
   color: red;
