@@ -24,8 +24,8 @@ from sqlalchemy import desc
 #db.commit()
 
 
-print('User.query.all(): ', User.query.all())
-print(User.query.all()[0].password)
+#print('User.query.all(): ', User.query.all())
+#print(User.query.all()[0].password)
 #for user in User.query.all():
 #	db.delete(user)
 #db.commit()
@@ -45,17 +45,18 @@ print(User.query.all()[0].password)
 
 #u.lander_scores.append(Lander(score = 14.5))
 #db.commit()
-#lands = db.query(Lander.score).order_by
+#flaps = db.query(FlappyPong.score).all()
 #userScore = db.query(User).filter_by(username = 'test').first().lander_scores
 #print(userScore)
 #for score in userScore:
 #	db.delete(score)
 #	db.commit()
-#lands = db.query(Lander).order_by(desc(Lander.score)).limit(10).all()
-#for score in lands:
+lands = db.query(FlappyPong).order_by(desc(FlappyPong.score)).limit(10).all()
+
+for score in lands:
 #	db.delete(score)
 #	db.commit()
-#	print(score.user.username)
+	print(score.score)
 
 
 #print(lands[0].user.password)

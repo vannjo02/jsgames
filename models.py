@@ -9,11 +9,11 @@ class User(Base):
 	id = Column(Integer, primary_key=True)
 	username = Column(String, unique=True)
 	password = Column(Text)
-	lander_scores = relationship("Lander", back_populates = 'user')
-	flappy_scores = relationship("FlappyPong", back_populates = 'user')
-	gravity_scores = relationship("GravityGolf", back_populates = 'user')
-	pacman_scores = relationship("Pacman", back_populates = 'user')
-	fifteen_scores = relationship("Fifteen", back_populates = 'user')
+	lander_scores = relationship("Lander", cascade="all,delete,delete-orphan", backref = 'user')
+	flappy_scores = relationship("FlappyPong", cascade="all,delete,delete-orphan", backref = 'user')
+	gravity_scores = relationship("GravityGolf", cascade="all,delete,delete-orphan", backref = 'user')
+	pacman_scores = relationship("Pacman", cascade="all,delete,delete-orphan", backref = 'user')
+	fifteen_scores = relationship("Fifteen", cascade="all,delete,delete-orphan", backref = 'user')
 
 	def __init__(self, username, password):
 		self.username = username
@@ -38,8 +38,7 @@ class Lander(Base):
 	__tablename__ = 'lander'
 	id = Column(Integer, primary_key=True)
 	score = Column(Integer)
-	user_id = Column(Integer, ForeignKey('user.id', ondelete='CASCADE'))
-	user = relationship("User", back_populates = "lander_scores")
+	user_id = Column(Integer, ForeignKey('user.id'))
 
 	def __repr__(self):
 		return "Lander({}, {})".format(self.user.username, self.score)
@@ -48,8 +47,7 @@ class FlappyPong(Base):
 	__tablename__ = 'flappypong'
 	id = Column(Integer, primary_key=True)
 	score = Column(Integer)
-	user_id = Column(Integer, ForeignKey('user.id', ondelete='CASCADE'))
-	user = relationship("User", back_populates = "flappy_scores")
+	user_id = Column(Integer, ForeignKey('user.id'))
 
 	def __repr__(self):
 		return "FlappyPong({}, {})".format(self.user.username, self.score)
@@ -58,8 +56,7 @@ class GravityGolf(Base):
 	__tablename__ = 'gravitygolf'
 	id = Column(Integer, primary_key=True)
 	score = Column(Integer)
-	user_id = Column(Integer, ForeignKey('user.id', ondelete='CASCADE'))
-	user = relationship("User", back_populates = "gravity_scores")
+	user_id = Column(Integer, ForeignKey('user.id'))
 
 	def __repr__(self):
 		return "GravityGolf({}, {})".format(self.user.username, self.score)
@@ -68,8 +65,7 @@ class Pacman(Base):
 	__tablename__ = 'pacman'
 	id = Column(Integer, primary_key=True)
 	score = Column(Integer)
-	user_id = Column(Integer, ForeignKey('user.id', ondelete='CASCADE'))
-	user = relationship("User", back_populates = "pacman_scores")
+	user_id = Column(Integer, ForeignKey('user.id'))
 
 	def __repr__(self):
 		return "Pacman({}, {})".format(self.user.username, self.score)
@@ -79,8 +75,7 @@ class Fifteen(Base):
 	__tablename__ = 'fifteen'
 	id = Column(Integer, primary_key=True)
 	score = Column(Integer)
-	user_id = Column(Integer, ForeignKey('user.id', ondelete='CASCADE'))
-	user = relationship("User", back_populates = "fifteen_scores")
+	user_id = Column(Integer, ForeignKey('user.id'))
 
 	def __repr__(self):
 		return "Fifteen({}, {})".format(self.user.username, self.score)

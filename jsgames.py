@@ -20,15 +20,15 @@ login_manager.init_app(app)
 
 Bootstrap(app)
 
-class SecuredStaticFlask(Flask):
-	def send_static_file(self, filename):
-        # Get user from session
-		print('test', filename)
-		print(flask_login.current_user.is_authenticated())
-		if flask_login.current_user.is_authenticated():
-			return super(SecuredStaticFlask, self).send_static_file(filename)
-		else:
-			abort(403) 
+#class SecuredStaticFlask(Flask):
+#	def send_static_file(self, filename):
+#        # Get user from session
+#		print('test', filename)
+#		print(flask_login.current_user.is_authenticated())
+#		if flask_login.current_user.is_authenticated():
+#			return super(SecuredStaticFlask, self).send_static_file(filename)
+#		else:
+#			abort(403) 
 
 
 def is_safe_url(target):
@@ -52,12 +52,12 @@ def redirect_back(endpoint, **values):
 
 
 
-def Username_check(form, field):
-	u = db.query(User).filter_by(username=field.data)
-	exists = u.scalar()
-	if type(form).__name__ == RegistrationForm and exists != None:
-		field.errors.append('Username already exists')
-		return False
+#def Username_check(form, field):
+#	u = db.query(User).filter_by(username=field.data)
+#	exists = u.scalar()
+#	if type(form).__name__ == RegistrationForm and exists != None:
+#		field.errors.append('Username already exists')
+#		return False
 
 #	if type(form).__name__ == LoginForm and exists == None:
 #		field.errors.append('Username does not exist')
@@ -85,7 +85,7 @@ class LoginForm(Form):
 		return True
 
 class RegistrationForm(Form):
-	username = StringField('Username', [validators.Length(min=3, max=25), Username_check],render_kw={"placeholder": "Username"})
+	username = StringField('Username', [validators.Length(min=3, max=25)],render_kw={"placeholder": "Username"})
 	password = PasswordField('New Password', [validators.Length(min=3, max=72), validators.DataRequired(), validators.EqualTo('confirm', message='Passwords must match')], render_kw={"placeholder": "Password"})
 	confirm = PasswordField('Repeat Password', render_kw={"placeholder": "Confirm Password"})
 
@@ -134,24 +134,25 @@ def user_loader(username):
 	return user
 
 
-@login_manager.request_loader
-def request_loader(request):
-	print('test2', request.args)
-	username = request.form.get('username')
-	if username == None:
-		return
-	u = db.query(User).filter_by(username=username)
-	exists = u.scalar()
-	if exists == None:
-		return None
-	user = Users()
-	user.id = username
-	pw = request.form['password']
-	if len(pw) > 0:
-		verify = u.first().verify_password(pw.encode())
-		if verify == True:
-			user.is_authenticated = True
-	return None
+#@login_manager.request_loader
+#def request_loader(request):
+#	print('request: ', request.args)
+#	username = request.form.get('username')
+#	if username == None:
+#		return
+#	u = db.query(User).filter_by(username=username)
+#	exists = u.scalar()
+#	if exists == None:
+#		return None
+#	user = Users()
+#	user.id = username
+#	pw = request.form['password']
+#	if len(pw) > 0:
+#		verify = u.first().verify_password(pw.encode())
+#		if verify == True:
+#			user.is_authenticated = True
+#			return user
+#	return None
 
 
 @app.route('/login', methods=['POST'])
@@ -162,6 +163,10 @@ def login():
 		user = Users()
 		user.id = form.username.data
 		flask_login.login_user(user)
+		
+		if not is_safe_url(next):
+			return flask.abort(400)
+	
 		return redirect_back('home')
 
 	return render_template('home.html', form = form, next=next)
@@ -170,14 +175,17 @@ def login():
 @app.route('/register', methods=['GET', 'POST'])
 def register():
 
-	next = get_redirect_target()
-
 	if flask_login.current_user.is_authenticated == True:
 		return redirect(url_for('home'))
+
+	next = get_redirect_target()
+
+	
 
 	form = RegistrationForm(request.form)
 
 	if request.method == 'POST' and form.validate():
+		print('form validated')
 		pw = form.password.data
 		new = pw.encode()
 		hashed = bcrypt.hashpw(new, bcrypt.gensalt(13))
@@ -187,6 +195,9 @@ def register():
 		user = Users()
 		user.id = form.username.data
 		flask_login.login_user(user)
+		next = get_redirect_target()
+		if not is_safe_url(next):
+			return flask.abort(400)
 		return redirect_back('home')
 
 	
@@ -203,7 +214,7 @@ def logout():
 @app.route('/deleteAccount', methods=['GET', 'POST'])
 @flask_login.login_required
 def deleteAccount():
-	return redirect(url_for('home'))
+	
 	next = get_redirect_target()
 	form = DeleteAccForm(request.form)
 	if request.method == 'GET':
