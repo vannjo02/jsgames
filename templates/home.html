@@ -31,7 +31,8 @@
           <h3>Welcome, {{ current_user.id }}!</h3>
         </div>
         <button type="button" class="btn btn-info" onclick=window.location.href='/logout'>Log Out</button>
-        <button type="button" class="btn btn-info" onclick=window.location.href='/deleteAccount'>Delete Account</button>
+        <button type="button" class="btn btn-danger" onclick=window.location.href='/deleteAccount'>Delete Account</button>
+		<button type="button" class="btn btn-warning" onclick=window.location.href='/changePass'>change Password</button>
       </form>
     </div><!--/.navbar-collapse -->
 {% else %}

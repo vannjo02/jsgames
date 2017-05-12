@@ -49,12 +49,16 @@
   </div>
 	</form>
 </div>
+{% if form.errors %}
+    <ul class="errors">
+        {% for field_name, field_errors in form.errors|dictsort if field_errors %}
+          {% for error in field_errors %}
+            <li>{{ form[field_name].label }}: {{ error }}</li>
+          {% endfor %}
+          {% endfor %}
+        </ul>
+  {% endif %}
 </div>
 
-<div>
-{% if delErr %}
-<p>Passwords do not match, or null values submitted.</p>
-{% endif %}
-</div>
 
 {% endblock %}

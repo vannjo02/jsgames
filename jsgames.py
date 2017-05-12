@@ -101,6 +101,31 @@ class DeleteAccForm(Form):
 	confirm = PasswordField('Repeat Password', render_kw={"placeholder": "Confirm Password"})
 
 
+class changePassForm(Form):
+	username = StringField('Username', [validators.Length(min=3, max=25)])
+	password = PasswordField('Current Password', [validators.DataRequired()], render_kw={"placeholder": "Current Password"})
+	newpass = PasswordField('New Password', [validators.DataRequired(),validators.Length(min=3, max=72)], render_kw={"placeholder": "New Password"})
+
+	def validate(self):
+		rv = Form.validate(self)
+		if not rv:
+			return False
+
+		u = db.query(User).filter_by(username=self.username.data)
+		exists = u.scalar()
+		if exists != None:
+			if u.first().verify_password(self.password.data.encode()) == False:
+				self.password.errors.append('Invalid password')
+				return False
+			elif self.password.data == self.newpass.data:
+				self.newpass.errors.append('New pass cannot be the same as old')
+				return False
+		else: 
+			self.username.errors.append('Username does not exist')
+			return False
+		return True
+
+
 @app.after_request
 def add_header(response):
 	"""
@@ -231,6 +256,31 @@ def deleteAccount():
 			return redirect(url_for('home'))
 
 	return render_template('deleteAccount.html', form=form)
+
+
+@app.route('/changePass', methods=['GET', 'POST'])
+@flask_login.login_required
+def changePass():
+	
+#	next = get_redirect_target()
+	form = changePassForm(request.form)
+	if request.method == 'GET':
+		return render_template('changePass.html', form=form)
+	print(request.form)
+	if request.method == 'POST' and form.validate():
+		#		userID = flask_login.current_user.get_id()
+		userID = form.username.data
+		pw = form.newpass.data
+		new = pw.encode()
+		hashed = bcrypt.hashpw(new, bcrypt.gensalt(13))
+		u = db.query(User).filter_by(username=userID).first()
+		u.password = hashed
+		db.commit()
+		return redirect(url_for('home'))
+
+	return render_template('changePass.html', form=form)
+
+
 
 
 @login_manager.unauthorized_handler

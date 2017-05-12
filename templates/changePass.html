@@ -1,5 +1,4 @@
 {% extends "bootstrap/base.html" %}
-
 {% block styles %}
 {{super()}}
 <link rel="stylesheet"
@@ -7,18 +6,6 @@
 {% endblock %}
 
 {% block content %}
-{% from "_formhelpers.html" import render_field %}
-<!-- <h1>Register</h1>
-<div>
-<form method='POST'>
-<dl>
-    {{ render_field(form.username) }}
-    {{ render_field(form.password) }}
-    {{ render_field(form.confirm) }}
-</dl>
-<p><input type=submit value=Register>
-</form>
-</div> -->
 <nav class="navbar navbar-inverse navbar-static-top">
   <div class="container">
     <div class="navbar-header">
@@ -30,36 +17,40 @@
       </button>
       <a class="navbar-brand" href="/home">GameHub</a>
     </div>
-  </div>
+
+{% if current_user.is_authenticated %}
+
+<div id="navbar" class="navbar-collapse collapse">
+  <form class="navbar-form navbar-right">
+    <div class="form-group">
+      <p>Welcome, {{ current_user.id }}!</p>
+    </div>
+    <button type="button" class="btn btn-info" onclick=window.location.href='/logout'>Log Out</button>
+  </form>
+</div><!--/.navbar-collapse -->
 </nav>
+{% endif %}
 
 <div class='register-card'>
   <div class='register-card--title'>
     <h1>
-      Register
+      Change Password
     </h1>
-  </div>
-  <div>
-  <form class="registerForm" method='POST'>
-  <div class="form-group">
-      {{ form.csrf_token }}
-      {{ form.username (class_="form-control")}}
-  </div>
-  <div class="form-group">
+    <div class="form-group">
+    <form class='deleteAccount' method='POST'>
+    <div class="form-group">
       {{ form.password (class_="form-control") }}
   </div>
   <div class="form-group">
-      {{ form.confirm (class_="form-control")}}
+      {{ form.newpass (class_="form-control")}}
     </div>
-  <!-- <p><input type=submit value=Register> -->
-  <div class="col-md-8 text-center">
-    <button type="submit" class="btn btn-info" value=Register>Register</button>
-      <!--<input type=hidden value="{{ next or '' }}" name=next>-->
-    </div>
-  </form>
-
+	<input id="username" name="username" type=hidden value="{{ current_user.id }}">
+    <button type="submit" class="btn btn-info" name='submit'>Submit</button>
+	<!--<input type=hidden value="{{ next or '' }}" name=next>-->
   </div>
-  {% if form.errors %}
+	</form>
+</div>
+{% if form.errors %}
     <ul class="errors">
         {% for field_name, field_errors in form.errors|dictsort if field_errors %}
           {% for error in field_errors %}
