@@ -97,8 +97,26 @@ class RegistrationForm(Form):
 
 
 class DeleteAccForm(Form):
+	username = StringField('Username', [validators.Length(min=3, max=25)])
 	password = PasswordField('Current Password', [validators.DataRequired(), validators.EqualTo('confirm', message='Passwords must match')],render_kw={"placeholder": "Password"})
 	confirm = PasswordField('Repeat Password', render_kw={"placeholder": "Confirm Password"})
+
+	def validate(self):
+		rv = Form.validate(self)
+		if not rv:
+			return False
+
+		u = db.query(User).filter_by(username=self.username.data)
+		exists = u.scalar()
+		if exists != None:
+			if u.first().verify_password(self.password.data.encode()) == False:
+				self.password.errors.append('Invalid password')
+				return False
+		else: 
+			self.username.errors.append('Username does not exist')
+			return False
+		return True
+
 
 
 class changePassForm(Form):
@@ -246,14 +264,13 @@ def deleteAccount():
 		return render_template('deleteAccount.html', form=form)
 	print(request.form)
 	if request.method == 'POST' and form.validate():
-		userID = flask_login.current_user.get_id()
-		u = db.query(User).filter_by(username=userID).first()
+#		userID = flask_login.current_user.get_id()
+		u = db.query(User).filter_by(username=form.username.data).first()
 		print(u)
-		if u.verify_password(form.password.data.encode()):
-			db.delete(u)
-			db.commit()
-			flask_login.logout_user()
-			return redirect(url_for('home'))
+		db.delete(u)
+		db.commit()
+		flask_login.logout_user()
+		return redirect(url_for('home'))
 
 	return render_template('deleteAccount.html', form=form)
 

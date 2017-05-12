@@ -44,6 +44,7 @@
   <div class="form-group">
       {{ form.confirm (class_="form-control")}}
     </div>
+	<input id="username" name="username" type=hidden value="{{ current_user.id }}">
     <button type="submit" class="btn btn-info" name='submit'>Submit</button>
 	<!--<input type=hidden value="{{ next or '' }}" name=next>-->
   </div>
