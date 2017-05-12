@@ -203,6 +203,7 @@ def logout():
 @app.route('/deleteAccount', methods=['GET', 'POST'])
 @flask_login.login_required
 def deleteAccount():
+	return redirect(url_for('home'))
 	next = get_redirect_target()
 	form = DeleteAccForm(request.form)
 	if request.method == 'GET':
@@ -211,6 +212,7 @@ def deleteAccount():
 	if request.method == 'POST' and form.validate():
 		userID = flask_login.current_user.get_id()
 		u = db.query(User).filter_by(username=userID).first()
+		print(u)
 		if u.verify_password(form.password.data.encode()):
 			db.delete(u)
 			db.commit()

@@ -38,7 +38,7 @@ class Lander(Base):
 	__tablename__ = 'lander'
 	id = Column(Integer, primary_key=True)
 	score = Column(Integer)
-	user_id = Column(Integer, ForeignKey('user.id'))
+	user_id = Column(Integer, ForeignKey('user.id', ondelete='CASCADE'))
 	user = relationship("User", back_populates = "lander_scores")
 
 	def __repr__(self):
@@ -48,7 +48,7 @@ class FlappyPong(Base):
 	__tablename__ = 'flappypong'
 	id = Column(Integer, primary_key=True)
 	score = Column(Integer)
-	user_id = Column(Integer, ForeignKey('user.id'))
+	user_id = Column(Integer, ForeignKey('user.id', ondelete='CASCADE'))
 	user = relationship("User", back_populates = "flappy_scores")
 
 	def __repr__(self):
@@ -58,7 +58,7 @@ class GravityGolf(Base):
 	__tablename__ = 'gravitygolf'
 	id = Column(Integer, primary_key=True)
 	score = Column(Integer)
-	user_id = Column(Integer, ForeignKey('user.id'))
+	user_id = Column(Integer, ForeignKey('user.id', ondelete='CASCADE'))
 	user = relationship("User", back_populates = "gravity_scores")
 
 	def __repr__(self):
@@ -68,7 +68,7 @@ class Pacman(Base):
 	__tablename__ = 'pacman'
 	id = Column(Integer, primary_key=True)
 	score = Column(Integer)
-	user_id = Column(Integer, ForeignKey('user.id'))
+	user_id = Column(Integer, ForeignKey('user.id', ondelete='CASCADE'))
 	user = relationship("User", back_populates = "pacman_scores")
 
 	def __repr__(self):
@@ -79,7 +79,7 @@ class Fifteen(Base):
 	__tablename__ = 'fifteen'
 	id = Column(Integer, primary_key=True)
 	score = Column(Integer)
-	user_id = Column(Integer, ForeignKey('user.id'))
+	user_id = Column(Integer, ForeignKey('user.id', ondelete='CASCADE'))
 	user = relationship("User", back_populates = "fifteen_scores")
 
 	def __repr__(self):

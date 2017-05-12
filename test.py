@@ -24,8 +24,8 @@ from sqlalchemy import desc
 #db.commit()
 
 
-#print('User.query.all(): ', User.query.all())
-#print(User.query.all()[0].password)
+print('User.query.all(): ', User.query.all())
+print(User.query.all()[0].password)
 #for user in User.query.all():
 #	db.delete(user)
 #db.commit()
@@ -46,8 +46,8 @@ from sqlalchemy import desc
 #u.lander_scores.append(Lander(score = 14.5))
 #db.commit()
 #lands = db.query(Lander.score).order_by
-userScore = db.query(User).filter_by(username = 'test').first().lander_scores
-print(userScore)
+#userScore = db.query(User).filter_by(username = 'test').first().lander_scores
+#print(userScore)
 #for score in userScore:
 #	db.delete(score)
 #	db.commit()
