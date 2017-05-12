@@ -31,23 +31,23 @@ Bootstrap(app)
 #			abort(403) 
 
 
-def is_safe_url(target):
-	ref_url = urlparse(request.host_url)
-	test_url = urlparse(urljoin(request.host_url, target))
-	return test_url.scheme in ('http', 'https') and ref_url.netloc == test_url.netloc
+#def is_safe_url(target):
+#	ref_url = urlparse(request.host_url)
+#	test_url = urlparse(urljoin(request.host_url, target))
+#	return test_url.scheme in ('http', 'https') and ref_url.netloc == test_url.netloc
 
-def get_redirect_target():
-	for target in request.values.get('next'), request.referrer:
-		if not target:
-			continue
-		if is_safe_url(target):
-			return target
+#def get_redirect_target():
+#	for target in request.values.get('next'), request.referrer:
+#		if not target:
+#			continue
+#		if is_safe_url(target):
+#			return target
 
-def redirect_back(endpoint, **values):
-	target = request.form['next']
-	if not target or not is_safe_url(target):
-		target = url_for(endpoint, **values)
-	return redirect(target)
+#def redirect_back(endpoint, **values):
+#	target = request.form['next']
+#	if not target or not is_safe_url(target):
+#		target = url_for(endpoint, **values)
+#	return redirect(target)
 
 
 
@@ -157,19 +157,19 @@ def user_loader(username):
 
 @app.route('/login', methods=['POST'])
 def login():
-	next = get_redirect_target()
+#	next = get_redirect_target()
 	form = LoginForm(request.form)
 	if form.validate():
 		user = Users()
 		user.id = form.username.data
 		flask_login.login_user(user)
 		
-		if not is_safe_url(next):
-			return flask.abort(400)
+#		if not is_safe_url(next):
+#			return flask.abort(400)
 	
-		return redirect_back('home')
+		return redirect(url_for('home'))
 
-	return render_template('home.html', form = form, next=next)
+	return render_template('home.html', form = form)
 
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -178,7 +178,7 @@ def register():
 	if flask_login.current_user.is_authenticated == True:
 		return redirect(url_for('home'))
 
-	next = get_redirect_target()
+#	next = get_redirect_target()
 
 	
 
@@ -195,15 +195,15 @@ def register():
 		user = Users()
 		user.id = form.username.data
 		flask_login.login_user(user)
-		next = get_redirect_target()
-		if not is_safe_url(next):
-			return flask.abort(400)
-		return redirect_back('home')
+#		next = get_redirect_target()
+#		if not is_safe_url(next):
+#			return flask.abort(400)
+		return redirect(url_for('home'))
 
 	
 	
 
-	return render_template('register.html', form = form, next = next)
+	return render_template('register.html', form = form)
 
 
 @app.route('/logout')
@@ -215,7 +215,7 @@ def logout():
 @flask_login.login_required
 def deleteAccount():
 	
-	next = get_redirect_target()
+#	next = get_redirect_target()
 	form = DeleteAccForm(request.form)
 	if request.method == 'GET':
 		return render_template('deleteAccount.html', form=form)
@@ -230,7 +230,7 @@ def deleteAccount():
 			flask_login.logout_user()
 			return redirect(url_for('home'))
 
-	return render_template('deleteAccount.html', form=form, next=next)
+	return render_template('deleteAccount.html', form=form)
 
 
 @login_manager.unauthorized_handler
@@ -245,9 +245,9 @@ def index():
 
 @app.route('/home')
 def home():
-	next = get_redirect_target()
+#	next = get_redirect_target()
 	form = LoginForm(request.form)
-	return render_template('home.html', form = form, next=next)
+	return render_template('home.html', form = form)
 
 @app.route('/flappypong', methods=['POST', 'GET'])
 def flappypong():
