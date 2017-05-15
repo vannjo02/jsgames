@@ -230,7 +230,6 @@ def register():
 	form = RegistrationForm(request.form)
 
 	if request.method == 'POST' and form.validate():
-		print('form validated')
 		pw = form.password.data
 		new = pw.encode()
 		hashed = bcrypt.hashpw(new, bcrypt.gensalt(13))
@@ -264,11 +263,11 @@ def deleteAccount():
 	form = DeleteAccForm(request.form)
 	if request.method == 'GET':
 		return render_template('deleteAccount.html', form=form)
-	print(request.form)
+	
 	if request.method == 'POST' and form.validate():
 #		userID = flask_login.current_user.get_id()
 		u = db.query(User).filter_by(username=form.username.data).first()
-		print(u)
+		
 		db.delete(u)
 		db.commit()
 		flask_login.logout_user()
@@ -285,7 +284,7 @@ def changePass():
 	form = changePassForm(request.form)
 	if request.method == 'GET':
 		return render_template('changePass.html', form=form)
-	print(request.form)
+	
 	if request.method == 'POST' and form.validate():
 		#		userID = flask_login.current_user.get_id()
 		userID = form.username.data
@@ -326,7 +325,7 @@ def flappypong():
 		if request.json != "get" and userID != None:
 			sub = db.query(FlappyPong.user_id, FlappyPong.score.label('score')).order_by(desc('score')).subquery()
 			flaps = db.query(User.username, 'score').join((sub, sub.c.user_id==User.id)).filter(User.username==userID).all()
-			print(flaps)
+		
 			count = 0
 			found = False
 			newScore = request.json
@@ -349,7 +348,7 @@ def flappypong():
 					db.commit()
 
 			userScore = db.query(User).filter_by(username = userID).first().flappy_scores
-			print(userScore)
+			
 #		This is the old query:
 #		flaps = db.query(FlappyPong).order_by(desc(FlappyPong.score)).limit(10).all()
 		
@@ -380,7 +379,6 @@ def gravitygolf():
 
 	if request.method == 'POST':
 		userID = flask_login.current_user.get_id()
-		print(userID)
 		if request.json != "get" and userID != None:
 			sub = db.query(GravityGolf.user_id, GravityGolf.score.label('score')).order_by(desc('score')).subquery()
 			golfs = db.query(User.username, 'score').join((sub, sub.c.user_id==User.id)).filter(User.username==userID).all()
@@ -406,12 +404,6 @@ def gravitygolf():
 					db.commit()
 					found = True
 			userScore = db.query(User).filter_by(username = userID).first().gravity_scores
-			print(userScore)
-#		This is the old query:
-#		flaps = db.query(FlappyPong).order_by(desc(FlappyPong.score)).limit(10).all()
-		
-#		This is the new query, which allows us to get just the top scores for each user, so we can support users having 
-#		more than just one score in the database for any game table. 
 		sub = db.query(GravityGolf.user_id, func.max(GravityGolf.score).label('user_max')).group_by(GravityGolf.user_id).order_by(desc('user_max')).limit(10).subquery()
 
 		golfs = db.query(User.username, 'user_max').join((sub, sub.c.user_id==User.id)).all()
@@ -437,7 +429,7 @@ def pacman():
 
 	if request.method == 'POST':
 		userID = flask_login.current_user.get_id()
-		print(userID)
+		
 		if request.json != "get" and userID != None:
 			sub = db.query(Pacman.user_id, Pacman.score.label('score')).order_by(desc('score')).subquery()
 			pacs = db.query(User.username, 'score').join((sub, sub.c.user_id==User.id)).filter(User.username==userID).all()
@@ -463,7 +455,7 @@ def pacman():
 					db.commit()
 					found = True
 			userScore = db.query(User).filter_by(username = userID).first().pacman_scores
-			print(userScore)
+		
 		sub = db.query(Pacman.user_id, func.max(Pacman.score).label('user_max')).group_by(Pacman.user_id).order_by(desc('user_max')).limit(10).subquery()
 
 		pacs = db.query(User.username, 'user_max').join((sub, sub.c.user_id==User.id)).all()
@@ -491,7 +483,6 @@ def lander():
 	
 	if request.method == 'POST':
 		userID = flask_login.current_user.get_id()
-		print(userID)
 		if request.json != "get" and userID != None:
 			sub = db.query(Lander.user_id, Lander.score.label('score')).order_by(desc('score')).subquery()
 			lands = db.query(User.username, 'score').join((sub, sub.c.user_id==User.id)).filter(User.username==userID).all()
@@ -517,7 +508,7 @@ def lander():
 					db.commit()
 					found = True
 			userScore = db.query(User).filter_by(username = userID).first().lander_scores
-			print(userScore)
+			
 		sub = db.query(Lander.user_id, func.max(Lander.score).label('user_max')).group_by(Lander.user_id).order_by(desc('user_max')).limit(10).subquery()
 
 		lands = db.query(User.username, 'user_max').join((sub, sub.c.user_id==User.id)).all()
@@ -542,7 +533,6 @@ def fifteen():
 
 	if request.method == 'POST':
 		userID = flask_login.current_user.get_id()
-		print(userID)
 		if request.json != "get" and userID != None:
 			sub = db.query(Fifteen.user_id, Fifteen.score.label('score')).order_by(desc('score')).subquery()
 			fifts = db.query(User.username, 'score').join((sub, sub.c.user_id==User.id)).filter(User.username==userID).all()
@@ -568,7 +558,7 @@ def fifteen():
 					db.commit()
 					found = True
 			userScore = db.query(User).filter_by(username = userID).first().fifteen_scores
-			print(userScore)
+		
 		sub = db.query(Fifteen.user_id, func.max(Fifteen.score).label('user_max')).group_by(Fifteen.user_id).order_by(desc('user_max')).limit(10).subquery()
 
 		fifts = db.query(User.username, 'user_max').join((sub, sub.c.user_id==User.id)).all()
@@ -592,16 +582,10 @@ def fifteen():
 
 
 
-
-
-
-
-
-
 @app.route('/api/flappypong')
 def api_flappypong():
 	flaps = db.query(FlappyPong).order_by(desc(FlappyPong.score)).all()
-	print(flaps)
+	
 	scores = {}
 	for score in flaps:
 		scores[score.user.username] = {"score": score.score}
