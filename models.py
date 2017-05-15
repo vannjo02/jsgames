@@ -24,7 +24,7 @@ class User(Base):
 		return "User({})".format(self.username)
 
 	def verify_password(self, password):
-		pwhash = bcrypt.hashpw(password, self.password)
+		pwhash = bcrypt.hashpw(password.encode('utf-8'), self.password)
 		if len(self.password) != len(pwhash):
 			return False
 
