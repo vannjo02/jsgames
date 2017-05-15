@@ -78,7 +78,7 @@ class LoginForm(Form):
 		u = db.query(User).filter_by(username=self.username.data)
 		exists = u.scalar()
 		if exists != None:
-			if u.first().verify_password(self.password.data.encode()) == False:
+			if u.first().verify_password(self.password.data.encode('utf-8')) == False:
 				self.password.errors.append('Invalid password')
 				return False
 		else: 
@@ -111,7 +111,7 @@ class DeleteAccForm(Form):
 		u = db.query(User).filter_by(username=self.username.data)
 		exists = u.scalar()
 		if exists != None:
-			if u.first().verify_password(self.password.data.encode()) == False:
+			if u.first().verify_password(self.password.data.encode('utf-8')) == False:
 				self.password.errors.append('Invalid password')
 				return False
 		else: 
@@ -134,7 +134,7 @@ class changePassForm(Form):
 		u = db.query(User).filter_by(username=self.username.data)
 		exists = u.scalar()
 		if exists != None:
-			if u.first().verify_password(self.password.data.encode()) == False:
+			if u.first().verify_password(self.password.data.encode('utf-8')) == False:
 				self.password.errors.append('Invalid password')
 				return False
 			elif self.password.data == self.newpass.data:
@@ -231,7 +231,7 @@ def register():
 
 	if request.method == 'POST' and form.validate():
 		pw = form.password.data
-		new = pw.encode()
+		new = pw.encode('utf-8')
 		hashed = bcrypt.hashpw(new, bcrypt.gensalt(13))
 		u = User(form.username.data, hashed)
 		db.add(u)
@@ -289,7 +289,7 @@ def changePass():
 		#		userID = flask_login.current_user.get_id()
 		userID = form.username.data
 		pw = form.newpass.data
-		new = pw.encode()
+		new = pw.encode('utf-8')
 		hashed = bcrypt.hashpw(new, bcrypt.gensalt(13))
 		u = db.query(User).filter_by(username=userID).first()
 		u.password = hashed
