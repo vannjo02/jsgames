@@ -52,14 +52,13 @@
       {{ form.confirm (class_="form-control")}}
     </div>
   <!-- <p><input type=submit value=Register> -->
-  <div class="col-md-8 text-center">
+  <div class="text-center">
     <button type="submit" class="btn btn-info" value=Register>Register</button>
       <!--<input type=hidden value="{{ next or '' }}" name=next>-->
     </div>
-  </form>
-
-  </div>
+	</div>
   {% if form.errors %}
+	<div>
     <ul class="errors">
         {% for field_name, field_errors in form.errors|dictsort if field_errors %}
           {% for error in field_errors %}
@@ -67,7 +66,11 @@
           {% endfor %}
           {% endfor %}
         </ul>
+	</div>
   {% endif %}
+  </form>
+
+  
 </div>
 
 {% endblock %}

@@ -39,7 +39,7 @@ var racketHeight = 10;
 var wallSpeed = 5;
 var wallInterval = 1000;
 var lastAddTime = 0;
-var minGapHeight = 150;
+var minGapHeight = 200;
 var maxGapHeight = 300;
 var wallWidth = 80;
 var wallColors;
@@ -50,6 +50,7 @@ var walls = [];
 function setup() {
   createCanvas(600, 600);
   $('#container').append('<br /><table class = "scores"><tr><thead><th>Username</th><th>Score</th></thead></tr><tbody id = "scores"></tbody></table>')
+  $('#container').append('<br /><table class = "scores"><tr><thead><th>Personal Scores</th></thead></tr><tbody id = "p_scores"></tbody></table>')
   document.getElementById('container').appendChild(canvas)
   
   // set the initial coordinates of the ball
@@ -120,23 +121,42 @@ $.ajax({
             type: 'POST',
 			contentType: 'application/json;charset=UTF-8',
             success: function(response) {
-				$('#scores tr').remove();
 				console.log(response)
+				$('#scores tr').remove();
+				$('#p_scores tr').remove();
+				for (table in response){
 				var lst = []
-				for (var score in response) {
-    			lst.push([score, response[score]]);
+				for (var score in response[table]) {
+    			lst.push([score, response[table][score]]);
 				}
 				lst.sort(function(a, b){
 					return a[1] - b[1];
 				});
-				var table = document.getElementById("scores");
-				console.log(lst);
+				var id = (table == "global_top" ? "scores" : "p_scores")
+				var table = document.getElementById(id);
+				console.log(lst[0]);
+				
+				if (id == "p_scores"){
+					if (lst[0][1] == "Anonymous user"){
+					var row = table.insertRow(0);
+    				var cell1 = row.insertCell(0);
+					cell1.innerHTML = "Anonymous user"
+					} else {
+						for (var i = 0; i < lst.length; i++) {
+    					var row = table.insertRow(0);
+    					var cell1 = row.insertCell(0);
+    					cell1.innerHTML = lst[i][1];
+				}
+						}
+				} else {
 			for (var i = 0; i < lst.length; i++) {
     			var row = table.insertRow(0);
     			var cell1 = row.insertCell(0);
     			var cell2 = row.insertCell(1);
     			cell1.innerHTML = lst[i][0];
     			cell2.innerHTML = lst[i][1];
+				}
+				}
 				}
             },
             error: function(error) {

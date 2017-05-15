@@ -103,23 +103,42 @@ function Ball(x,y,dX,dY,radius,drawRadius){
             type: 'POST',
 			contentType: 'application/json;charset=UTF-8',
             success: function(response) {
-				$('#scores tr').remove();
 				console.log(response)
+				$('#scores tr').remove();
+				$('#p_scores tr').remove();
+				for (table in response){
 				var lst = []
-				for (var score in response) {
-    			lst.push([score, response[score]]);
+				for (var score in response[table]) {
+    			lst.push([score, response[table][score]]);
 				}
 				lst.sort(function(a, b){
 					return b[1] - a[1];
 				});
-				var table = document.getElementById("scores");
-				console.log(lst);
+				var id = (table == "global_top" ? "scores" : "p_scores")
+				var table = document.getElementById(id);
+				console.log(lst[0]);
+				
+				if (id == "p_scores"){
+					if (lst[0][1] == "Anonymous user"){
+					var row = table.insertRow(0);
+    				var cell1 = row.insertCell(0);
+					cell1.innerHTML = "Anonymous user"
+					} else {
+						for (var i = 0; i < lst.length; i++) {
+    					var row = table.insertRow(0);
+    					var cell1 = row.insertCell(0);
+    					cell1.innerHTML = lst[i][1];
+				}
+						}
+				} else {
 			for (var i = 0; i < lst.length; i++) {
     			var row = table.insertRow(0);
     			var cell1 = row.insertCell(0);
     			var cell2 = row.insertCell(1);
     			cell1.innerHTML = lst[i][0];
     			cell2.innerHTML = lst[i][1];
+				}
+				}
 				}
             },
             error: function(error) {

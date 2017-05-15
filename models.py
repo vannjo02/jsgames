@@ -9,11 +9,11 @@ class User(Base):
 	id = Column(Integer, primary_key=True)
 	username = Column(String, unique=True)
 	password = Column(Text)
-	lander_scores = relationship("Lander", cascade="all,delete,delete-orphan", backref = 'user')
-	flappy_scores = relationship("FlappyPong", cascade="all,delete,delete-orphan", backref = 'user')
-	gravity_scores = relationship("GravityGolf", cascade="all,delete,delete-orphan", backref = 'user')
-	pacman_scores = relationship("Pacman", cascade="all,delete,delete-orphan", backref = 'user')
-	fifteen_scores = relationship("Fifteen", cascade="all,delete,delete-orphan", backref = 'user')
+	lander_scores = relationship("Lander", cascade="all,delete,delete-orphan", backref = 'user', lazy='joined')
+	flappy_scores = relationship("FlappyPong", cascade="all,delete,delete-orphan", backref = 'user', lazy='joined')
+	gravity_scores = relationship("GravityGolf", cascade="all,delete,delete-orphan", backref = 'user', lazy='joined')
+	pacman_scores = relationship("Pacman", cascade="all,delete,delete-orphan", backref = 'user', lazy='joined')
+	fifteen_scores = relationship("Fifteen", cascade="all,delete,delete-orphan", backref = 'user', lazy='joined')
 
 	def __init__(self, username, password):
 		self.username = username

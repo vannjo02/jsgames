@@ -3,17 +3,19 @@ import flask_login
 from flask_bootstrap import Bootstrap
 from wtforms import Form, BooleanField, StringField, PasswordField, validators, ValidationError
 from wtforms.validators import DataRequired
-import os
 from database import db_session as db
 from models import *
 import bcrypt
 import json
-from urllib.parse import urlparse, urljoin
-from sqlalchemy import desc
+import os
+from sqlalchemy import desc, func
+#from urllib.parse import urlparse, urljoin
+
+
 
 app = Flask(__name__)
-#os.urandom(24)
-app.secret_key = '\x1fy\xb0[\x85\xf2\xe5\xd4\x94\x06F\xd9\x1dd\x93\x14\xde\xb1\x12H\xa2\x15V\x90'
+
+app.secret_key = os.urandom(24)
 
 login_manager = flask_login.LoginManager()
 login_manager.init_app(app)
@@ -320,22 +322,55 @@ def home():
 def flappypong():
 	
 	if request.method == 'POST':
-		if request.json != "get":
-			userID = flask_login.current_user.get_id()
-			u = db.query(User).filter_by(username=userID).first()
-			userScores = u.flappy_scores
-			if userScores == []:
-				u.flappy_scores.append(FlappyPong(score = request.json))
+		userID = flask_login.current_user.get_id()
+		if request.json != "get" and userID != None:
+			sub = db.query(FlappyPong.user_id, FlappyPong.score.label('score')).order_by(desc('score')).subquery()
+			flaps = db.query(User.username, 'score').join((sub, sub.c.user_id==User.id)).filter(User.username==userID).all()
+			print(flaps)
+			count = 0
+			found = False
+			newScore = request.json
+			u = db.query(User).filter_by(username = userID).first()
+			userScore = u.flappy_scores
+			if len(flaps) < 5:
+				u.flappy_scores.append(FlappyPong(score = newScore))
 				db.commit()
-			elif userScores[0].score < request.json:
-				db.delete(userScores[0])
-				u.flappy_scores.append(FlappyPong(score = request.json))
-				db.commit()
-		flaps = db.query(FlappyPong).order_by(desc(FlappyPong.score)).limit(10).all()
-		scores = {}
+			else:	
+				if newScore > flaps[4][1]:
+					found = False
+					count = 0
+					while not found and count < 5:
+						if userScore[count].score == flaps[4][1]:
+							db.delete(userScore[count])
+							db.commit()
+							found = True
+						count += 1
+					u.flappy_scores.append(FlappyPong(score = newScore))
+					db.commit()
+
+			userScore = db.query(User).filter_by(username = userID).first().flappy_scores
+			print(userScore)
+#		This is the old query:
+#		flaps = db.query(FlappyPong).order_by(desc(FlappyPong.score)).limit(10).all()
+		
+#		This is the new query, which allows us to get just the top scores for each user, so we can support users having 
+#		more than just one score in the database for any game table. 
+		sub = db.query(FlappyPong.user_id, func.max(FlappyPong.score).label('user_max')).group_by(FlappyPong.user_id).order_by(desc('user_max')).limit(10).subquery()
+
+		flaps = db.query(User.username, 'user_max').join((sub, sub.c.user_id==User.id)).all()
+		global_top = {}
+		personal_top = []
 		for score in flaps:
-			scores[score.user.username] = score.score
-		return jsonify(scores);	
+			global_top[score[0]] = score[1]
+		if userID != None:
+			u = db.query(User).filter_by(username = userID).first()
+			userScore = u.flappy_scores
+			for score in userScore:
+				personal_top.append(score.score)
+		else:
+			personal_top.append('Anonymous user')
+		scores = {"global_top": global_top, "personal_top": personal_top}
+		return jsonify(scores)	
 	return render_template('games/flappy_pong/flappy_pong.html')
 #	return redirect(url_for('static', filename='games/flappy_pong/flappy_pong.html'))
 
@@ -344,24 +379,55 @@ def flappypong():
 def gravitygolf():
 
 	if request.method == 'POST':
-		if request.json != "get":
-			userID = flask_login.current_user.get_id()
-			u = db.query(User).filter_by(username=userID).first()
-			userScores = u.gravity_scores
-			print(userScores)
-			if userScores == []:
-				u.gravity_scores.append(GravityGolf(score = request.json))
+		userID = flask_login.current_user.get_id()
+		print(userID)
+		if request.json != "get" and userID != None:
+			sub = db.query(GravityGolf.user_id, GravityGolf.score.label('score')).order_by(desc('score')).subquery()
+			golfs = db.query(User.username, 'score').join((sub, sub.c.user_id==User.id)).filter(User.username==userID).all()
+			count = 0
+			found = False
+			newScore = request.json
+			u = db.query(User).filter_by(username = userID).first()
+			userScore = u.gravity_scores
+			if len(golfs) < 5:
+				u.gravity_scores.append(GravityGolf(score = newScore))
 				db.commit()
-			elif userScores[0].score > request.json:
-				db.delete(userScores[0])
-				u.gravity_scores.append(GravityGolf(score = request.json))
-				db.commit()
-		golfs = db.query(GravityGolf).order_by(desc(GravityGolf.score)).limit(10).all()
-		scores = {}
-		for score in golfs:
-			scores[score.user.username] = score.score
-		return jsonify(scores);	
+			else:	
+				if newScore < golfs[0][1]:
+					found = False
+					count = 0
+					while not found and count < 5:
+						if userScore[count].score == golfs[0][1]:
+							db.delete(userScore[count])
+							db.commit()
+							found = True
+						count += 1
+					u.gravity_scores.append(GravityGolf(score = newScore))
+					db.commit()
+					found = True
+			userScore = db.query(User).filter_by(username = userID).first().gravity_scores
+			print(userScore)
+#		This is the old query:
+#		flaps = db.query(FlappyPong).order_by(desc(FlappyPong.score)).limit(10).all()
+		
+#		This is the new query, which allows us to get just the top scores for each user, so we can support users having 
+#		more than just one score in the database for any game table. 
+		sub = db.query(GravityGolf.user_id, func.max(GravityGolf.score).label('user_max')).group_by(GravityGolf.user_id).order_by(desc('user_max')).limit(10).subquery()
 
+		golfs = db.query(User.username, 'user_max').join((sub, sub.c.user_id==User.id)).all()
+		global_top = {}
+		personal_top = []
+		for score in golfs:
+			global_top[score[0]] = score[1]
+		if userID != None:
+			u = db.query(User).filter_by(username = userID).first()
+			userScore = u.gravity_scores
+			for score in userScore:
+				personal_top.append(score.score)
+		else:
+			personal_top.append('Anonymous user')
+		scores = {"global_top": global_top, "personal_top": personal_top}
+		return jsonify(scores)
 	return render_template('games/GravityGolf/index.html')
 	#return redirect(url_for('static', filename='games/GravityGolf/index.html'))
 
@@ -370,22 +436,50 @@ def gravitygolf():
 def pacman():
 
 	if request.method == 'POST':
-		if request.json != "get":
-			userID = flask_login.current_user.get_id()
-			u = db.query(User).filter_by(username=userID).first()
-			userScores = u.pacman_scores
-			if userScores == []:
-				u.pacman_scores.append(Pacman(score = request.json))
+		userID = flask_login.current_user.get_id()
+		print(userID)
+		if request.json != "get" and userID != None:
+			sub = db.query(Pacman.user_id, Pacman.score.label('score')).order_by(desc('score')).subquery()
+			pacs = db.query(User.username, 'score').join((sub, sub.c.user_id==User.id)).filter(User.username==userID).all()
+			count = 0
+			found = False
+			newScore = request.json
+			u = db.query(User).filter_by(username = userID).first()
+			userScore = u.pacman_scores
+			if len(pacs) < 5:
+				u.pacman_scores.append(Pacman(score = newScore))
 				db.commit()
-			elif userScores[0].score < request.json:
-				db.delete(userScores[0])
-				u.pacman_scores.append(Pacman(score = request.json))
-				db.commit()
-		pacs = db.query(Pacman).order_by(desc(Pacman.score)).limit(10).all()
-		scores = {}
+			else:	
+				if newScore > pacs[4][1]:
+					found = False
+					count = 0
+					while not found and count < 5:
+						if userScore[count].score == pacs[4][1]:
+							db.delete(userScore[count])
+							db.commit()
+							found = True
+						count += 1
+					u.pacman_scores.append(Pacman(score = newScore))
+					db.commit()
+					found = True
+			userScore = db.query(User).filter_by(username = userID).first().pacman_scores
+			print(userScore)
+		sub = db.query(Pacman.user_id, func.max(Pacman.score).label('user_max')).group_by(Pacman.user_id).order_by(desc('user_max')).limit(10).subquery()
+
+		pacs = db.query(User.username, 'user_max').join((sub, sub.c.user_id==User.id)).all()
+		global_top = {}
+		personal_top = []
 		for score in pacs:
-			scores[score.user.username] = score.score
-		return jsonify(scores);	
+			global_top[score[0]] = score[1]
+		if userID != None:
+			u = db.query(User).filter_by(username = userID).first()
+			userScore = u.pacman_scores
+			for score in userScore:
+				personal_top.append(score.score)
+		else:
+			personal_top.append('Anonymous user')
+		scores = {"global_top": global_top, "personal_top": personal_top}
+		return jsonify(scores)
 
 
 #	return render_template('games/pacman/index.html')
@@ -396,22 +490,50 @@ def pacman():
 def lander():
 	
 	if request.method == 'POST':
-		if request.json != "get":
-			userID = flask_login.current_user.get_id()
-			u = db.query(User).filter_by(username=userID).first()
-			userScores = u.lander_scores
-			if userScores == []:
-				u.lander_scores.append(Lander(score = request.json))
+		userID = flask_login.current_user.get_id()
+		print(userID)
+		if request.json != "get" and userID != None:
+			sub = db.query(Lander.user_id, Lander.score.label('score')).order_by(desc('score')).subquery()
+			lands = db.query(User.username, 'score').join((sub, sub.c.user_id==User.id)).filter(User.username==userID).all()
+			count = 0
+			found = False
+			newScore = request.json
+			u = db.query(User).filter_by(username = userID).first()
+			userScore = u.lander_scores
+			if len(lands) < 5:
+				u.lander_scores.append(Lander(score = newScore))
 				db.commit()
-			elif userScores[0].score < request.json:
-				db.delete(userScores[0])
-				u.lander_scores.append(Lander(score = request.json))
-				db.commit()
-		lands = db.query(Lander).order_by(desc(Lander.score)).limit(10).all()
-		scores = {}
+			else:	
+				if newScore > lands[4][1]:
+					found = False
+					count = 0
+					while not found and count < 5:
+						if userScore[count].score == lands[4][1]:
+							db.delete(userScore[count])
+							db.commit()
+							found = True
+						count += 1
+					u.lander_scores.append(Lander(score = newScore))
+					db.commit()
+					found = True
+			userScore = db.query(User).filter_by(username = userID).first().lander_scores
+			print(userScore)
+		sub = db.query(Lander.user_id, func.max(Lander.score).label('user_max')).group_by(Lander.user_id).order_by(desc('user_max')).limit(10).subquery()
+
+		lands = db.query(User.username, 'user_max').join((sub, sub.c.user_id==User.id)).all()
+		global_top = {}
+		personal_top = []
 		for score in lands:
-			scores[score.user.username] = score.score
-		return jsonify(scores);	
+			global_top[score[0]] = score[1]
+		if userID != None:
+			u = db.query(User).filter_by(username = userID).first()
+			userScore = u.lander_scores
+			for score in userScore:
+				personal_top.append(score.score)
+		else:
+			personal_top.append('Anonymous user')
+		scores = {"global_top": global_top, "personal_top": personal_top}
+		return jsonify(scores)
 	return render_template('games/lander.html')
 	
 
@@ -419,25 +541,109 @@ def lander():
 def fifteen():
 
 	if request.method == 'POST':
-		if request.json != "get":
-			userID = flask_login.current_user.get_id()
-			u = db.query(User).filter_by(username=userID).first()
-			userScores = u.fifteen_scores
-			if userScores == []:
-				u.fifteen_scores.append(Fifteen(score = request.json))
+		userID = flask_login.current_user.get_id()
+		print(userID)
+		if request.json != "get" and userID != None:
+			sub = db.query(Fifteen.user_id, Fifteen.score.label('score')).order_by(desc('score')).subquery()
+			fifts = db.query(User.username, 'score').join((sub, sub.c.user_id==User.id)).filter(User.username==userID).all()
+			count = 0
+			found = False
+			newScore = request.json
+			u = db.query(User).filter_by(username = userID).first()
+			userScore = u.fifteen_scores
+			if len(fifts) < 5:
+				u.fifteen_scores.append(Fifteen(score = newScore))
 				db.commit()
-			elif userScores[0].score > request.json:
-				db.delete(userScores[0])
-				u.fifteen_scores.append(Fifteen(score = request.json))
-				db.commit()
-		fifteen = db.query(Fifteen).order_by(desc(Fifteen.score)).limit(10).all()
-		scores = {}
-		for score in fifteen:
-			scores[score.user.username] = score.score
-		return jsonify(scores);	
+			else:
+				if newScore < fifts[0][1]:
+					found = False
+					count = 0
+					while not found and count < 5:
+						if userScore[count].score == fifts[0][1]:
+							db.delete(userScore[count])
+							db.commit()
+							found = True
+						count += 1
+					u.fifteen_scores.append(Fifteen(score = newScore))
+					db.commit()
+					found = True
+			userScore = db.query(User).filter_by(username = userID).first().fifteen_scores
+			print(userScore)
+		sub = db.query(Fifteen.user_id, func.max(Fifteen.score).label('user_max')).group_by(Fifteen.user_id).order_by(desc('user_max')).limit(10).subquery()
+
+		fifts = db.query(User.username, 'user_max').join((sub, sub.c.user_id==User.id)).all()
+		global_top = {}
+		personal_top = []
+		for score in fifts:
+			global_top[score[0]] = score[1]
+		if userID != None:
+			u = db.query(User).filter_by(username = userID).first()
+			userScore = u.fifteen_scores
+			for score in userScore:
+				personal_top.append(score.score)
+		else:
+			personal_top.append('Anonymous user')
+		scores = {"global_top": global_top, "personal_top": personal_top}
+		return jsonify(scores)	
 
 	return render_template('games/fifteen/index.html')
 #	return redirect(url_for('static', filename='games/fifteen/index.html'))
+
+
+
+
+
+
+
+
+
+
+@app.route('/api/flappypong')
+def api_flappypong():
+	flaps = db.query(FlappyPong).order_by(desc(FlappyPong.score)).all()
+	print(flaps)
+	scores = {}
+	for score in flaps:
+		scores[score.user.username] = {"score": score.score}
+	return jsonify(scores);	
+
+
+@app.route('/api/gravitygolf')
+def api_gravitygolf():
+	golfs = db.query(GravityGolf).order_by(desc(GravityGolf.score)).all()
+	scores = {}
+	for score in golfs:
+		scores[score.user.username] = {"score": score.score}
+	return jsonify(scores);	
+
+@app.route('/api/pacman')
+def api_pacman():
+	pacs = db.query(Pacman).order_by(desc(Pacman.score)).all()
+	scores = {}
+	for score in pacs:
+		scores[score.user.username] = {"score": score.score}
+	return jsonify(scores);	
+
+@app.route('/api/lander')
+def api_lander():
+	lands = db.query(Lander).order_by(desc(Lander.score)).all()
+	scores = {}
+	for score in lands:
+		scores[score.user.username] = {"score": score.score}
+	return jsonify(scores);	
+	
+
+@app.route('/api/fifteen')
+def api_fifteen():
+	fifteen = db.query(Fifteen).order_by(desc(Fifteen.score)).all()
+	scores = {}
+	for score in fifteen:
+		scores[score.user.username] = {"score": score.score}
+	return jsonify(scores);	
+
+
+
+
 
 
 
