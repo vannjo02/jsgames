@@ -589,7 +589,10 @@ def api_flappypong():
 	pacs = db.query(User.username, 'score').join((sub, sub.c.user_id==User.id)).all()
 	scores = {}
 	for score in flaps:
-		scores[score.user.username] = {"score": score.score}
+		if score[0] in scores:
+			scores[score[0]].append(score[1])
+		else:
+			scores[score[0]] = []
 	return jsonify(scores);	
 
 
