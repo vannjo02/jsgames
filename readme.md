@@ -14,10 +14,15 @@ at the suggestion of flask-login, but it wasn't working properly.
 WTForms is used to validate the forms for register, login, change password, and delete account. 
 
 There is a small api system that can get accessed by calling one of:
+
 /api/flappypong
+
 /api/gravitygolf
+
 /api/pacman
+
 /api/fifteen
+
 /api/lander
 
 
