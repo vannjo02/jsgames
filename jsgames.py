@@ -407,9 +407,9 @@ def gravitygolf():
 					db.commit()
 					found = True
 			userScore = db.query(User).filter_by(username = userID).first().gravity_scores
-		sub = db.query(GravityGolf.user_id, func.max(GravityGolf.score).label('user_max')).group_by(GravityGolf.user_id).order_by(desc('user_max')).limit(10).subquery()
+		sub = db.query(GravityGolf.user_id, func.min(GravityGolf.score).label('user_min')).group_by(GravityGolf.user_id).order_by(desc('user_max')).limit(10).subquery()
 
-		golfs = db.query(User.username, 'user_max').join((sub, sub.c.user_id==User.id)).all()
+		golfs = db.query(User.username, 'user_min').join((sub, sub.c.user_id==User.id)).all()
 		global_top = {}
 		personal_top = []
 		for score in golfs:
@@ -562,9 +562,9 @@ def fifteen():
 					found = True
 			userScore = db.query(User).filter_by(username = userID).first().fifteen_scores
 		
-		sub = db.query(Fifteen.user_id, func.max(Fifteen.score).label('user_max')).group_by(Fifteen.user_id).order_by(desc('user_max')).limit(10).subquery()
+		sub = db.query(Fifteen.user_id, func.min(Fifteen.score).label('user_min')).group_by(Fifteen.user_id).order_by(desc('user_max')).limit(10).subquery()
 
-		fifts = db.query(User.username, 'user_max').join((sub, sub.c.user_id==User.id)).all()
+		fifts = db.query(User.username, 'user_min').join((sub, sub.c.user_id==User.id)).all()
 		global_top = {}
 		personal_top = []
 		for score in fifts:
