@@ -34,7 +34,9 @@ I took these games from open source sites like github, and the game 'Fifteen' wa
 I edited the javascript games to make a couple of them harder, or easier, based entirely on my own opinions. In FlappyPong, I made 
 the health decrease faster, in Lander I made it harder to crash the ship and also fixed the 'out of fuel' conditions. In Gravity Golf
 I put a hole counter, and stroke counter at the top of the canvas, and reset the game after nine holes, before this it was just 
-an infinitely looping game that increased the number of planets each round. 
+an infinitely looping game that increased the number of planets each round. I also drastically decreased the draw distance of the 
+aiming line so that more skill was involved with guessing where it was going to land. Previously the line extended far enough out 
+that the game was not challenging in the slightest because you could see exactly where it would land all the time.
 
 Most of the games were easy enough to locate a score variable and send it to the server upon losing the game, or winning, but 
 pacman was created in such a way that it was impossible for me to edit the javascript properly. So I used a mutation observer to 
