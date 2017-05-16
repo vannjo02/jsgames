@@ -22,10 +22,17 @@ There is a small api system that can get accessed by calling one of:
 
 These will return all the scores for all users of one of the games. 
 
-There is an issue I'm running into with postgresql on heroku, such that the validate_password function in models.py 
-is not running properly. The logs state that it's an error with bcrypt.
-"TypeError: Unicode-objects must be encoded before hashing"
-Which is strange because I AM encoding all the passwords before hashing. It works just fine with the sqlite database on heroku, 
-but not postgresql. However, because of heroku's ephemeral system, the sqlite database gets erased whenever the server goes 
-to sleep, which is why I attempted to transition to postgresql so that users and scores would remain. 
+There is an issue I'm running into with postgresql on heroku, such that the transition from sqlite to postgresql is causing
+problems with authentication, verifying passwords, etc. As per the advice of this stackoverflow answer:
 
+http://stackoverflow.com/a/41441208/7055878
+
+I decided to try to use .decode('ascii') on the hashed password before storing into the database because of how psycopg2 stores
+text. And then upon checking passwords, I use password.encode('ascii'), to reverse the process. 
+
+Things seem to be running ok, however there's still what appears to be a lot finnicky authentication with flask-login now. 
+The system is retrieving data more slowly, or something, and flask-login sometimes returns that the user is not anonymous,
+and sometimes that they are logged in. This never happened with sqlite. 
+
+If one wanted to test this locally, just go to database.py and change 'DATABASE_URI' to the 'local' variable, 
+and then comment out the DATABASE_URI line. 

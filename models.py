@@ -8,7 +8,7 @@ class User(Base):
 	__tablename__ = 'user'
 	id = Column(Integer, primary_key=True)
 	username = Column(String, unique=True)
-	password = Column(Text)
+	password = Column(String)
 	lander_scores = relationship("Lander", cascade="all,delete,delete-orphan", backref = 'user', lazy='joined')
 	flappy_scores = relationship("FlappyPong", cascade="all,delete,delete-orphan", backref = 'user', lazy='joined')
 	gravity_scores = relationship("GravityGolf", cascade="all,delete,delete-orphan", backref = 'user', lazy='joined')

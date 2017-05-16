@@ -585,8 +585,8 @@ def fifteen():
 
 @app.route('/api/flappypong')
 def api_flappypong():
-	flaps = db.query(FlappyPong).order_by(desc(FlappyPong.score)).all()
-	
+	sub = db.query(FlappyPong.user_id, FlappyPong.score.label('score')).subquery()
+	pacs = db.query(User.username, 'score').join((sub, sub.c.user_id==User.id)).all()
 	scores = {}
 	for score in flaps:
 		scores[score.user.username] = {"score": score.score}
@@ -603,7 +603,9 @@ def api_gravitygolf():
 
 @app.route('/api/pacman')
 def api_pacman():
-	pacs = db.query(Pacman).order_by(desc(Pacman.score)).all()
+	sub = db.query(Pacman.user_id, Pacman.score.label('score')).order_by(desc('score')).subquery()
+	pacs = db.query(User.username, 'score').join((sub, sub.c.user_id==User.id)).all()
+	print(pacs)
 	scores = {}
 	for score in pacs:
 		scores[score.user.username] = {"score": score.score}
