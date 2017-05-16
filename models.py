@@ -24,14 +24,11 @@ class User(Base):
 		return "User({})".format(self.username)
 
 	def verify_password(self, password):
-		pwhash = bcrypt.hashpw(password, self.password)
-		if len(self.password) != len(pwhash):
+#		pwhash = bcrypt.hashpw(password, self.password.decode('ascii'))
+		if bcrypt.checkpw(password, self.password):
+			return True
+		else: 
 			return False
-
-		result = 0
-		for x, y in zip(self.password, pwhash):
-			result |= x ^ y
-		return result == 0
 
 
 class Lander(Base):
