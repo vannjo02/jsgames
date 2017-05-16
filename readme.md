@@ -2,13 +2,14 @@
 
 This site uses SQLAlchemy to store use information and game scores. 
 There are six tables in all, with a one to many relationship. 
-We used the python module bcrypt to hash passwords, and we also used an equality algorithm 
-that protects against time attacks, because flask-login suggested to do so. 
+We used the python module bcrypt to hash passwords, and it also is used to verify passwords, 
+while protecting against time-attacks. 
 
-There is a file called createdb.py which will create the sqlite database file from scratch when it's run. 
+There is a file called createdb.py which will create the sqlite database (or whatever the source is specified as)
+file from scratch when it's run. 
 
 There is some commented out code that was being used for protection against malicious redirects, 
-at the suggestion of flask-login again, but it wasn't working properly. 
+at the suggestion of flask-login, but it wasn't working properly. 
 
 WTForms is used to validate the forms for register, login, change password, and delete account. 
 
@@ -21,6 +22,9 @@ There is a small api system that can get accessed by calling one of:
 
 
 These will return all the scores for all users of one of the games. 
+
+
+
 
 There is an issue I'm running into with postgresql on heroku, such that the transition from sqlite to postgresql is causing
 problems with authentication, verifying passwords, etc. As per the advice of this stackoverflow answer:
@@ -41,8 +45,12 @@ If one wanted to test this locally, just go to database.py and change 'DATABASE_
 and then comment out the DATABASE_URI line. 
 
 
+
+In light of the problems above, I've just decided to have the heroku site running on sqlite so that it actually works properly,
+even if users and scores get deleted all the time. 
+
+
+
+
 Joshua Vannatter
 Clinton Akomea-Agyin
-
-
-
