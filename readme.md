@@ -1,6 +1,6 @@
 ## The Rundown
 
-This site uses SQLAlchemy to store use information and game scores. 
+This site uses SQLAlchemy to store user information and game scores. 
 There are six tables in all, with a one to many relationship. 
 We used the python module bcrypt to hash passwords, and it also is used to verify passwords, 
 while protecting against time-attacks. 
