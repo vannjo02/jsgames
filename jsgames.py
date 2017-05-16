@@ -235,8 +235,8 @@ def register():
 		new = pw.encode()
 		hashed = bcrypt.hashpw(new, bcrypt.gensalt(13))
 #		testing for psycopg2 password storing, doesn't work quite right on heroku...
-#		u = User(form.username.data, hashed.decode('ascii'))
-		u = User(form.username.data, hashed)
+		u = User(form.username.data, hashed.decode('ascii'))
+#		u = User(form.username.data, hashed)
 		db.add(u)
 		db.commit()
 		user = Users()

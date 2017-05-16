@@ -28,8 +28,8 @@ class User(Base):
 #		pwhash = bcrypt.hashpw(password, self.password.decode('ascii'))
 
 
-#		if bcrypt.checkpw(password, self.password.encode('ascii')):
-		if bcrypt.checkpw(password, self.password):
+		if bcrypt.checkpw(password, self.password.encode('ascii')):
+#		if bcrypt.checkpw(password, self.password):
 			return True
 		else: 
 			return False

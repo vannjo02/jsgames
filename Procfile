@@ -1,1 +1,1 @@
-web: gunicorn jsgames:app
+web: gunicorn jsgames:app --preload
