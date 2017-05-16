@@ -57,5 +57,6 @@ even if users and scores get deleted all the time.
 
 
 
-Joshua Vannatter
+Joshua Vannatter,
+
 Clinton Akomea-Agyin
