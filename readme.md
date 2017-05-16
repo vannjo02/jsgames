@@ -1,4 +1,4 @@
-## Synopsis
+## The Rundown
 
 This site uses SQLAlchemy to store use information and game scores. 
 There are six tables in all, with a one to many relationship. 
@@ -31,8 +31,18 @@ I decided to try to use .decode('ascii') on the hashed password before storing i
 text. And then upon checking passwords, I use password.encode('ascii'), to reverse the process. 
 
 Things seem to be running ok, however there's still what appears to be a lot finnicky authentication with flask-login now. 
-The system is retrieving data more slowly, or something, and flask-login sometimes returns that the user is not anonymous,
+The system is retrieving data more slowly, or something, and flask-login sometimes returns that the user is anonymous,
 and sometimes that they are logged in. This never happened with sqlite. 
+
+I have also changed the password type from 'Text' to 'String'. This may be helping slightly, but the server is still seems 
+to be unsure if someone is logged in at any given time, taking multiple refreshes to actually trigger the is_logged_in code. 
 
 If one wanted to test this locally, just go to database.py and change 'DATABASE_URI' to the 'local' variable, 
 and then comment out the DATABASE_URI line. 
+
+
+Joshua Vannatter
+Clinton Akomea-Agyin
+
+
+

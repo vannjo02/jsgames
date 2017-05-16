@@ -8,7 +8,7 @@ class User(Base):
 	__tablename__ = 'user'
 	id = Column(Integer, primary_key=True)
 	username = Column(String, unique=True)
-	password = Column(String)
+	password = Column(Text)
 	lander_scores = relationship("Lander", cascade="all,delete,delete-orphan", backref = 'user', lazy='joined')
 	flappy_scores = relationship("FlappyPong", cascade="all,delete,delete-orphan", backref = 'user', lazy='joined')
 	gravity_scores = relationship("GravityGolf", cascade="all,delete,delete-orphan", backref = 'user', lazy='joined')
@@ -24,8 +24,12 @@ class User(Base):
 		return "User({})".format(self.username)
 
 	def verify_password(self, password):
+#		old password checking:
 #		pwhash = bcrypt.hashpw(password, self.password.decode('ascii'))
+
+
 		if bcrypt.checkpw(password, self.password.encode('ascii')):
+#		if bcrypt.checkpw(password, self.password):
 			return True
 		else: 
 			return False

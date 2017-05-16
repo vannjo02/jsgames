@@ -234,7 +234,9 @@ def register():
 		pw = form.password.data
 		new = pw.encode()
 		hashed = bcrypt.hashpw(new, bcrypt.gensalt(13))
+#		testing for psycopg2 password storing, doesn't work quite right on heroku...
 		u = User(form.username.data, hashed.decode('ascii'))
+#		u = User(form.username.data, hashed)
 		db.add(u)
 		db.commit()
 		user = Users()
@@ -638,4 +640,4 @@ def api_fifteen():
 
 
 if __name__ == '__main__':
-	app.run(debug='True',  host="0.0.0.0", port=8001)
+	app.run(debug='True')
