@@ -69,6 +69,17 @@ In light of the problems above, I've just decided to have the heroku site runnin
 even if users and scores get deleted all the time. 
 
 
+## FINAL EDIT
+
+Just came across this stack overflow question that had the same issue as me, and they fixed it with this line of code in their 
+procfile:
+
+web: gunicorn app:app --preload
+
+Source: http://stackoverflow.com/a/39768181/7055878
+
+The site should be running completely on heroku's postgresql system now. 
+
 
 
 Joshua Vannatter,
