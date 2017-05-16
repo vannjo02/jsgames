@@ -28,8 +28,20 @@ There is a small api system that can get accessed by calling one of:
 
 These will return all the scores for all users of one of the games. 
 
+## The Games
+
+I took these games from open source sites like github, and the game 'Fifteen' was written by my roommate Ryne Hanson.
+I edited the javascript games to make a couple of them harder, or easier, based entirely on my own opinions. In FlappyPong, I made 
+the health decrease faster, in Lander I made it harder to crash the ship and also fixed the 'out of fuel' conditions. In Gravity Golf
+I put a hole counter, and stroke counter at the top of the canvas, and reset the game after nine holes, before this it was just 
+an infinitely looping game that increased the number of planets each round. 
+
+Most of the games were easy enough to locate a score variable and send it to the server upon losing the game, or winning, but 
+pacman was created in such a way that it was impossible for me to edit the javascript properly. So I used a mutation observer to 
+check the CSS of the 'Game Over' text. That was the most interesting game to edit. 
 
 
+## Issues
 
 There is an issue I'm running into with postgresql on heroku, such that the transition from sqlite to postgresql is causing
 problems with authentication, verifying passwords, etc. As per the advice of this stackoverflow answer:
