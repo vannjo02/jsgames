@@ -486,7 +486,7 @@ end_game_check = function() {
     			lst.push([score, response[table][score]]);
 				}
 				lst.sort(function(a, b){
-					return a[1] - b[1];
+					return b[1] - a[1];
 				});
 				var id = (table == "global_top" ? "scores" : "p_scores")
 				var table = document.getElementById(id);
