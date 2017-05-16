@@ -5,7 +5,7 @@ import os
 
 DATABASE_URI = os.environ['DATABASE_URL']
 
-#local = 'sqlite:///data.db'
+local = 'sqlite:///data.db'
 
 engine = create_engine(DATABASE_URI, convert_unicode=True)
 db_session = scoped_session(sessionmaker(autocommit=False,
