@@ -235,8 +235,8 @@ def register():
 		new = pw.encode()
 		hashed = bcrypt.hashpw(new, bcrypt.gensalt(13))
 #		testing for psycopg2 password storing, doesn't work quite right on heroku...
-		u = User(form.username.data, hashed.decode('ascii'))
-#		u = User(form.username.data, hashed)
+#		u = User(form.username.data, hashed.decode('ascii'))
+		u = User(form.username.data, hashed)
 		db.add(u)
 		db.commit()
 		user = Users()
@@ -589,48 +589,63 @@ def fifteen():
 def api_flappypong():
 	sub = db.query(FlappyPong.user_id, FlappyPong.score.label('score')).subquery()
 	pacs = db.query(User.username, 'score').join((sub, sub.c.user_id==User.id)).all()
+	print(pacs)
 	scores = {}
 	for score in pacs:
+		if score[0] not in scores:
+			scores[score[0]] = []
 		if score[0] in scores:
 			scores[score[0]].append(score[1])
-		else:
-			scores[score[0]] = []
 	return jsonify(scores);	
 
 
 @app.route('/api/gravitygolf')
 def api_gravitygolf():
-	golfs = db.query(GravityGolf).order_by(desc(GravityGolf.score)).all()
+	sub = db.query(GravityGolf.user_id, GravityGolf.score.label('score')).subquery()
+	golfs = db.query(User.username, 'score').join((sub, sub.c.user_id==User.id)).all()
 	scores = {}
 	for score in golfs:
-		scores[score.user.username] = {"score": score.score}
+		if score[0] not in scores:
+			scores[score[0]] = []
+		if score[0] in scores:
+			scores[score[0]].append(score[1])
 	return jsonify(scores);	
 
 @app.route('/api/pacman')
 def api_pacman():
-	sub = db.query(Pacman.user_id, Pacman.score.label('score')).order_by(desc('score')).subquery()
+	sub = db.query(Pacman.user_id, Pacman.score.label('score')).subquery()
 	pacs = db.query(User.username, 'score').join((sub, sub.c.user_id==User.id)).all()
-	print(pacs)
 	scores = {}
 	for score in pacs:
-		scores[score.user.username] = {"score": score.score}
+		if score[0] not in scores:
+			scores[score[0]] = []
+		if score[0] in scores:
+			scores[score[0]].append(score[1])
 	return jsonify(scores);	
 
 @app.route('/api/lander')
 def api_lander():
-	lands = db.query(Lander).order_by(desc(Lander.score)).all()
+	sub = db.query(Lander.user_id, Lander.score.label('score')).subquery()
+	lands = db.query(User.username, 'score').join((sub, sub.c.user_id==User.id)).all()
 	scores = {}
 	for score in lands:
-		scores[score.user.username] = {"score": score.score}
+		if score[0] not in scores:
+			scores[score[0]] = []
+		if score[0] in scores:
+			scores[score[0]].append(score[1])
 	return jsonify(scores);	
 	
 
 @app.route('/api/fifteen')
 def api_fifteen():
-	fifteen = db.query(Fifteen).order_by(desc(Fifteen.score)).all()
+	sub = db.query(Fifteen.user_id, Fifteen.score.label('score')).subquery()
+	fifts = db.query(User.username, 'score').join((sub, sub.c.user_id==User.id)).all()
 	scores = {}
-	for score in fifteen:
-		scores[score.user.username] = {"score": score.score}
+	for score in fifts:
+		if score[0] not in scores:
+			scores[score[0]] = []
+		if score[0] in scores:
+			scores[score[0]].append(score[1])
 	return jsonify(scores);	
 
 
