@@ -588,7 +588,7 @@ def api_flappypong():
 	sub = db.query(FlappyPong.user_id, FlappyPong.score.label('score')).subquery()
 	pacs = db.query(User.username, 'score').join((sub, sub.c.user_id==User.id)).all()
 	scores = {}
-	for score in flaps:
+	for score in pacs:
 		if score[0] in scores:
 			scores[score[0]].append(score[1])
 		else:
