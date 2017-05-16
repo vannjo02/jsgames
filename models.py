@@ -25,7 +25,7 @@ class User(Base):
 
 	def verify_password(self, password):
 #		pwhash = bcrypt.hashpw(password, self.password.decode('ascii'))
-		if bcrypt.checkpw(password, self.password):
+		if bcrypt.checkpw(password, self.password.encode('ascii')):
 			return True
 		else: 
 			return False

@@ -234,7 +234,7 @@ def register():
 		pw = form.password.data
 		new = pw.encode()
 		hashed = bcrypt.hashpw(new, bcrypt.gensalt(13))
-		u = User(form.username.data, hashed)
+		u = User(form.username.data, hashed.decode('ascii'))
 		db.add(u)
 		db.commit()
 		user = Users()
