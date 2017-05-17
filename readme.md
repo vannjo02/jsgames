@@ -26,7 +26,9 @@ There is a small api system that can get accessed by calling one of:
 /api/lander
 
 
-These will return all the scores for all users of one of the games. 
+These will return all the scores for all users of one of the games.
+
+I believe it is currently not set up with CORS. It's on the to-do list. 
 
 ## The Games
 
@@ -45,42 +47,40 @@ check the CSS of the 'Game Over' text. That was the most interesting game to edi
 
 ## Issues
 
-There is an issue I'm running into with postgresql on heroku, such that the transition from sqlite to postgresql is causing
-problems with authentication, verifying passwords, etc. As per the advice of this stackoverflow answer:
+There was an issue with postgresql is causing problems with bcrypt on heroku. 
+The issue has to do with the way psycopg2 stores text. To solve this, look at this stackoverflow answer:
 
 http://stackoverflow.com/a/41441208/7055878
 
-I decided to try to use .decode('ascii') on the hashed password before storing into the database because of how psycopg2 stores
-text. And then upon checking passwords, I use password.encode('ascii'), to reverse the process. 
+Use .decode('ascii') on the hashed password before storing into the database because of how psycopg2 stores
+text. And then upon checking passwords, use password.encode('ascii'), to reverse the process. This works just fine with sqlite.
 
-Things seem to be running ok, however there's still what appears to be a lot finnicky authentication with flask-login now. 
-The system is retrieving data more slowly, or something, and flask-login sometimes returns that the user is anonymous,
-and sometimes that they are logged in. This never happened with sqlite. 
-
-I have also changed the password type from 'Text' to 'String'. This may be helping slightly, but the server is still seems 
-to be unsure if someone is logged in at any given time, taking multiple refreshes to actually trigger the is_logged_in code. 
-
-If one wanted to test this locally, just go to database.py and change 'DATABASE_URI' to the 'local' variable, 
-and then comment out the DATABASE_URI line. 
-
-
-
-In light of the problems above, I've just decided to have the heroku site running on sqlite so that it actually works properly,
-even if users and scores get deleted all the time. 
-
-
-## FINAL EDIT
-
-Just came across this stack overflow question that had the same issue as me, and they fixed it with this line of code in their 
-procfile:
+There's an issue with flask-login that causes really weird issues on heroku without adding this line in the procfile:
 
 web: gunicorn app:app --preload
 
 Source: http://stackoverflow.com/a/39768181/7055878
 
-The site should be running completely on heroku's postgresql system now. 
+## Personal setup
 
+If you'd like to use your personal heroku postgresql database, run this code in the command line while working with your project:
 
+    heroku addons:create heroku-postgresql:hobby-dev
+
+To get your database url:
+
+    heroku config -s
+
+To set up the relations in the database, copy that url, and paste it in the database.py file as the first argument in the 
+'create_engine' line, (instead of 'local' or 'DATABASE_URI'). THEN run createdb.py and it will create the relations on that 
+postgresql database. 
+
+After that's done, uncomment this line:
+
+    DATABASE_URI = os.environ['DATABASE_URL']
+
+and replace the long url with 'DATABASE_URI'.
+ 
 
 Joshua Vannatter,
 
