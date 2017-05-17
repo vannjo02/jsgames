@@ -27,9 +27,8 @@ class User(Base):
 #		old password checking don't worry about this at all:
 #		pwhash = bcrypt.hashpw(password, self.password.decode('ascii'))
 
-#		If using psycopg2, use the line below this, if sqlite, do not use the .encode() line. 
+#		If using psycopg2, .encode() is necessary 
 		if bcrypt.checkpw(password, self.password.encode('ascii')):
-#		if bcrypt.checkpw(password, self.password):
 			return True
 		else: 
 			return False
